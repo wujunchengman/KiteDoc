@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <SignAssembly>false</SignAssembly>
+    <Version>0.0.3</Version>
+    <Company>吴俊城</Company>
+    <Product>吴俊城</Product>
+    <Description>一组使用OpenXML操作Word文档的快捷API</Description>
+    <PackageProjectUrl>weekok.cn</PackageProjectUrl>
+    <Authors>吴俊城</Authors>
+    <NeutralLanguage>zh</NeutralLanguage>
+    <RepositoryUrl>https://github.com/wujunchengman/KiteDoc</RepositoryUrl>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
+    <PackageReleaseNotes>添加获得只包含垂直合并表格的API</PackageReleaseNotes>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="DocumentFormat.OpenXml" Version="2.12.3" />
+    <PackageReference Include="System.Drawing.Common" Version="5.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\LICENSE.txt">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
+
+</Project>
