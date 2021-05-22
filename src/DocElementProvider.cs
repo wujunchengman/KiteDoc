@@ -538,13 +538,13 @@ namespace KiteDoc
                     if (string.IsNullOrEmpty(data[j][i]))
                     {
                         tableCell = GetTableCellObject(widthList[i],
-                            cellMerge: DocCellMergeEnum.HorizontalContinue);
+                            cellMerge: DocCellMergeEnum.VerticalContinue);
                     }
                     // 如果下一单元格没有数据，则开启合并单元格
-                    else if ((i + 1) < data[0].Length && string.IsNullOrEmpty(data[j][i + 1]))
+                    else if ((j + 1) < data.Count && string.IsNullOrEmpty(data[j+1][i]))
                     {
                         tableCell = GetTableCellObject(widthList[i], VerticalAlign.Center,
-                            DocCellMergeEnum.HorizontalStart);
+                            DocCellMergeEnum.VerticalStart);
                     }
                     else
                     {

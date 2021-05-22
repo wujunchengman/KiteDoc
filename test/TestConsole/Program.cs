@@ -47,7 +47,7 @@ namespace TestConsole
                  50, 50
              };
 
-            docElementProvider.GenerateVerticalMergeTable(null, analysisData, widthList, null);
+            docElementProvider.GenerateVerticalMergeTable(null, analysisData, widthList, 12);
             Console.WriteLine("Hello World!");
         }
     }
