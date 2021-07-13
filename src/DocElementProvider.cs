@@ -51,7 +51,7 @@ namespace KiteDoc
         /// <param name="fontSize">字体大小，传递为Null则使用默认字体大小</param>
         /// <param name="font">字体，默认为宋体</param>
         /// <returns></returns>
-        public Run GetRunObject(bool isBold, int? fontSize = null, string font = "宋体")
+        public Run GetRunObject(bool isBold, float? fontSize = null, string font = "宋体")
         {
             var run = new Run();
             var runProperties = new RunProperties();
@@ -234,7 +234,7 @@ namespace KiteDoc
         /// <param name="isSerialNumber">单元格内换行数据是否编号</param>
         /// <returns></returns>
         public Table GenerateNormalTable(List<string> tableHead, List<string[]> data, List<int> widthList,
-            int? fontSize = null, HorizontalAlign align = HorizontalAlign.Center, bool isSerialNumber = false)
+            float? fontSize = null, HorizontalAlign align = HorizontalAlign.Center, bool isSerialNumber = false)
         {
             var table = GetTableObject(true, 100);
 
@@ -350,7 +350,7 @@ namespace KiteDoc
         /// <param name="isSerialNumber">单元格内换行数据是否编号</param>
         /// <returns></returns>
         public Table GenerateNormalTable(List<string> tableHead, List<string[]> data, List<int> widthList,
-            int? fontSize = null, List<HorizontalAlign> align = null, bool isSerialNumber = false)
+            float? fontSize = null, List<HorizontalAlign> align = null, bool isSerialNumber = false)
         {
             var table = GetTableObject(true, 100);
 
@@ -469,7 +469,7 @@ namespace KiteDoc
         /// <param name="isSerialNumber">单元格内换行数据是否编号</param>
         /// <returns></returns>
         public Table GenerateVerticalMergeTable(List<string> tableHead, List<string[]> data, List<int> widthList,
-            int? fontSize = null, List<HorizontalAlign> align = null, bool isSerialNumber = false)
+            float? fontSize = null, List<HorizontalAlign> align = null, bool isSerialNumber = false)
         {
             var table = GetTableObject(true, 100);
             if ((tableHead != null) && tableHead.Count != 0)
@@ -612,7 +612,7 @@ namespace KiteDoc
         /// <param name="docCellMerges">合并对象列表，用于指定合并的起始位置</param>
         /// <returns></returns>
         public Table GenerateTable(List<string> tableHead, List<string[]> data, List<int> widthList,
-            int? fontSize = null, List<HorizontalAlign> align = null, List<DocCellMerge> docCellMerges = null)
+            float? fontSize = null, List<HorizontalAlign> align = null, List<DocCellMerge> docCellMerges = null)
         {
             var table = GetTableObject(true, 100);
             var tableCells = new List<List<TableCell>>();

@@ -29,7 +29,7 @@ namespace KiteDoc.Interface
         /// <param name="fontSize">字体大小，传递为Null则使用默认字体大小</param>
         /// <param name="font">字体，默认为宋体</param>
         /// <returns></returns>
-        Run GetRunObject(bool isBold, int? fontSize = null, string font = "宋体");
+        Run GetRunObject(bool isBold, float? fontSize = null, string font = "宋体");
 
         /// <summary>
         /// 返回一个Paragraph段落对象
@@ -73,7 +73,7 @@ namespace KiteDoc.Interface
         /// <param name="isSerialNumber">单元格内换行数据是否编号</param>
         /// <returns></returns>
         Table GenerateNormalTable(List<string> tableHead, List<string[]> data, List<int> widthList,
-            int? fontSize, HorizontalAlign align = HorizontalAlign.Center, bool isSerialNumber = false);
+            float? fontSize, HorizontalAlign align = HorizontalAlign.Center, bool isSerialNumber = false);
 
         /// <summary>
         /// 生成表格，如果单元格没数据会自动合并单元格
@@ -86,7 +86,7 @@ namespace KiteDoc.Interface
         /// <param name="isSerialNumber">单元格内换行数据是否编号</param>
         /// <returns></returns>
         Table GenerateNormalTable(List<string> tableHead, List<string[]> data, List<int> widthList,
-            int? fontSize, List<HorizontalAlign> align, bool isSerialNumber = false);
+            float? fontSize, List<HorizontalAlign> align, bool isSerialNumber = false);
 
         /// <summary>
         /// 获得一个包含垂直合并的表格
@@ -100,7 +100,7 @@ namespace KiteDoc.Interface
         /// <param name="isSerialNumber">单元格内换行数据是否编号</param>
         /// <returns></returns>
         Table GenerateVerticalMergeTable(List<string> tableHead, List<string[]> data, List<int> widthList,
-            int? fontSize = null, List<HorizontalAlign> align = null, bool isSerialNumber = false);
+            float? fontSize = null, List<HorizontalAlign> align = null, bool isSerialNumber = false);
 
         /// <summary>
         /// 获得一个包含图片的Run对象

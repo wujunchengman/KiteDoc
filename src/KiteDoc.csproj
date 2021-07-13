@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
     <SignAssembly>false</SignAssembly>
-    <Version>0.0.5</Version>
+    <Version>0.0.8</Version>
     <Company>吴俊城</Company>
     <Product>吴俊城</Product>
     <Description>一组使用OpenXML操作Word文档的快捷API</Description>
@@ -13,7 +13,12 @@
     <RepositoryUrl>https://github.com/wujunchengman/KiteDoc</RepositoryUrl>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
-    <PackageReleaseNotes>没有经过足够测试，发新版很烦</PackageReleaseNotes>
+    <PackageReleaseNotes>添加根据文本替换文本的API replaceText</PackageReleaseNotes>
+	  <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile></DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>

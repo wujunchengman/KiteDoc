@@ -42,7 +42,8 @@ namespace KiteDoc.Interface
         /// </summary>
         /// <param name="bookmarkStart">书签开始对象</param>
         /// <param name="text">文本内容</param>
-        void InsertTextToBookmark(BookmarkStart bookmarkStart, string text);
+        /// <param name="fontSize">指定字体大小，不指定时使用默认大小</param>
+        void InsertTextToBookmark(BookmarkStart bookmarkStart, string text,float? fontSize);
 
         /// <summary>
         /// 替换书签位置为普通表格
@@ -56,7 +57,7 @@ namespace KiteDoc.Interface
         /// <param name="aligns">水平对齐列表，数量等于列数时为每一列单独指定，只有一个时为全局指定</param>
         /// <param name="isSerialNumber">单元格内换行数据是否编号</param>
         void ReplaceNormalTableByBookmark(WordprocessingDocument doc, string bookmark, List<string> tableHead,
-            List<string[]> data, List<int> widthList, int? fontSize = null, List<HorizontalAlign> aligns = null, bool isSerialNumber = false);
+            List<string[]> data, List<int> widthList, float? fontSize = null, List<HorizontalAlign> aligns = null, bool isSerialNumber = false);
 
 
         /// <summary>
@@ -67,13 +68,24 @@ namespace KiteDoc.Interface
         /// <param name="run">OpenXML的Run对象</param>
         void ReplaceRunByBookmark(WordprocessingDocument doc, string bookmark, Run run);
 
+
+        /// <summary>
+        /// 替换文本内容
+        /// </summary>
+        /// <param name="doc">文档对象</param>
+        /// <param name="originText">原始文本</param>
+        /// <param name="destText">目标文本</param>
+        void ReplaceText(WordprocessingDocument doc, string originText, string destText);
+
+
         /// <summary>
         /// 修改书签文本
         /// </summary>
         /// <param name="doc">word文档对象</param>
         /// <param name="bookmarkName">书签名字</param>
         /// <param name="text">替换的文本</param>
-        void ReplaceTextByBookmark(WordprocessingDocument doc, string bookmarkName, string text);
+        /// <param name="fontSize">指定字体大小，不指定时使用默认大小</param>
+        void ReplaceTextByBookmark(WordprocessingDocument doc, string bookmarkName, string text,float? fontSize=null);
 
         /// <summary>
         /// 移除文档中所有的页眉页脚

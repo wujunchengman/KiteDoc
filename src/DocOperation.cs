@@ -176,9 +176,12 @@ namespace KiteDoc
         /// </summary>
         /// <param name="bookmarkStart">书签开始对象</param>
         /// <param name="text">文本内容</param>
-        public void InsertTextToBookmark(BookmarkStart bookmarkStart, string text)
+        /// <param name="fontSize">指定字体大小，不指定时使用默认大小</param>
+        public void InsertTextToBookmark(BookmarkStart bookmarkStart, string text,float? fontSize=null)
         {
-            Run run = new Run(new Text(text));
+            // Run run = new Run(new Text(text));
+            var run = _docElementProvider.GetRunObject(false,fontSize);
+            run.AppendChild(new Text(text));
             bookmarkStart.Parent.InsertAfter<Run>(run, bookmarkStart);
         }
 
@@ -196,7 +199,7 @@ namespace KiteDoc
         /// <param name="aligns">水平对齐列表，数量等于列数时为每一列单独指定，只有一个时为全局指定</param>
         /// <param name="isSerialNumber">单元格内换行数据是否编号</param>
         public void ReplaceNormalTableByBookmark(WordprocessingDocument doc, string bookmark, List<string> tableHead,
-            List<string[]> data, List<int> widthList, int? fontSize = null, List<HorizontalAlign> aligns = null, bool isSerialNumber = false)
+            List<string[]> data, List<int> widthList, float? fontSize = null, List<HorizontalAlign> aligns = null, bool isSerialNumber = false)
         {
             RemoveBookmarkContent(doc, bookmark);
             BookmarkStart bookmarkStart = FindBookmarkStart(doc, bookmark);
@@ -362,15 +365,82 @@ namespace KiteDoc
         }
 
         /// <summary>
+        /// 替换文本内容
+        /// </summary>
+        /// <param name="doc">文档对象</param>
+        /// <param name="originText">原始文本</param>
+        /// <param name="destText">目标文本</param>
+        public void ReplaceText(WordprocessingDocument doc,string originText,string destText)
+        {
+            // 替换正文中的内容
+            var body = doc.MainDocumentPart.Document.Body;
+            {
+                var paras = body.Elements<Paragraph>();
+                foreach (var para in paras)
+                {
+                    foreach (var run in para.Elements<Run>())
+                    {
+                        foreach (var text in run.Elements<Text>())
+                        {
+                            if (text.Text.Contains(originText))
+                            {
+                                text.Text = text.Text.Replace(originText, destText);
+                            }
+                        }
+                    }
+                }
+            }
+            // 替换页脚的内容
+            var footer = doc.MainDocumentPart.FooterParts;
+            foreach (var footerPart in footer)
+            {
+                var paras = footerPart.Footer.Elements<Paragraph>();
+                foreach (var para in paras)
+                {
+                    foreach (var run in para.Elements<Run>())
+                    {
+                        foreach (var text in run.Elements<Text>())
+                        {
+                            if (text.Text.Contains(originText))
+                            {
+                                text.Text = text.Text.Replace(originText, destText);
+                            }
+                        }
+                    }
+                }
+            }
+
+            var header = doc.MainDocumentPart.HeaderParts;
+            foreach (var headerPart in header)
+            {
+                var paras = headerPart.Header.Elements<Paragraph>();
+                foreach (var para in paras)
+                {
+                    foreach (var run in para.Elements<Run>())
+                    {
+                        foreach (var text in run.Elements<Text>())
+                        {
+                            if (text.Text.Contains(originText))
+                            {
+                                text.Text = text.Text.Replace(originText, destText);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        /// <summary>
         /// 修改书签文本
         /// </summary>
         /// <param name="doc">word文档对象</param>
         /// <param name="bookmarkName">书签名字</param>
         /// <param name="text">替换的文本</param>
-        public void ReplaceTextByBookmark(WordprocessingDocument doc, string bookmarkName, string text)
+        /// <param name="fontSize">指定字体大小，不指定时使用默认大小</param>
+        public void ReplaceTextByBookmark(WordprocessingDocument doc, string bookmarkName, string text,float? fontSize = null)
         {
             var bookmarkStart = RemoveBookmarkContent(doc, bookmarkName);
-            InsertTextToBookmark(bookmarkStart, text);
+            InsertTextToBookmark(bookmarkStart, text,fontSize);
         }
 
         /// <summary>
