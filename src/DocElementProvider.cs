@@ -13,6 +13,9 @@ using PIC = DocumentFormat.OpenXml.Drawing.Pictures;
 
 namespace KiteDoc
 {
+    /// <summary>
+    /// 获得Docx元素
+    /// </summary>
     public class DocElementProvider : IDocElementProvider
     {
         /// <summary>
@@ -157,12 +160,12 @@ namespace KiteDoc
                 case DocCellMergeEnum.Normal:
                     break;
                 case DocCellMergeEnum.HorizontalStart:
-                    Console.WriteLine("start");
+                    //Console.WriteLine("start");
                     tableCellProperties.AppendChild(new HorizontalMerge()
                     { Val = new EnumValue<MergedCellValues>(MergedCellValues.Restart) });
                     break;
                 case DocCellMergeEnum.HorizontalContinue:
-                    Console.WriteLine("continue");
+                    //Console.WriteLine("continue");
                     tableCellProperties.AppendChild(new HorizontalMerge()
                     { Val = new EnumValue<MergedCellValues>(MergedCellValues.Continue) });
                     break;
@@ -281,7 +284,7 @@ namespace KiteDoc
 
                     else if ((i + 1) < rowLength && string.IsNullOrEmpty(rowList[i + 1]))
                     {
-                        Console.WriteLine(rowList[i]);
+                        //Console.WriteLine(rowList[i]);
                         tableCell = GetTableCellObject(widthList[i], VerticalAlign.Center,
                             DocCellMergeEnum.HorizontalStart);
                     }
@@ -399,7 +402,7 @@ namespace KiteDoc
                             // 如果下一单元格没有数据，则开启合并单元格
                             else if ((i + 1) < rowList.Length && string.IsNullOrEmpty(rowList[i + 1]))
                             {
-                                Console.WriteLine(rowList[i]);
+                                //Console.WriteLine(rowList[i]);
                                 tableCell = GetTableCellObject(widthList[i], VerticalAlign.Top,
                                     DocCellMergeEnum.HorizontalStart);
                             }
@@ -695,7 +698,7 @@ namespace KiteDoc
                         // 如果下一单元格没有数据，则开启合并单元格
                         if ((i + 1) < rowList.Length && string.IsNullOrEmpty(rowList[i + 1]))
                         {
-                            Console.WriteLine(rowList[i]);
+                            //Console.WriteLine(rowList[i]);
                             tableCell = GetTableCellObject(widthList[i], VerticalAlign.Top,
                                 DocCellMergeEnum.HorizontalStart);
                         }
