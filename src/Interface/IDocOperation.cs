@@ -5,6 +5,9 @@ using System.Collections.Generic;
 
 namespace KiteDoc.Interface
 {
+    /// <summary>
+    /// Doc操作辅助接口
+    /// </summary>
     public interface IDocOperation
     {
         /// <summary>

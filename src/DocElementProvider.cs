@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using SixLabors.ImageSharp;
 using A = DocumentFormat.OpenXml.Drawing;
 using DW = DocumentFormat.OpenXml.Drawing.Wordprocessing;
 using PIC = DocumentFormat.OpenXml.Drawing.Pictures;
@@ -792,8 +793,8 @@ namespace KiteDoc
             // 这里因为流写过一次就变成空了，需要深入了解后再优化
             using (FileStream stream = new FileStream(fileName, FileMode.Open))
             {
-                Image image = Image.FromStream(stream);
-                rate = (double)image.Width / (double)image.Height;
+                var imageInfo = Image.Identify(stream);
+                rate = (double)imageInfo.Width / (double)imageInfo.Height;
             }
 
 
