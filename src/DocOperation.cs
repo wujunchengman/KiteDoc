@@ -375,18 +375,12 @@ namespace KiteDoc
             // 替换正文中的内容
             var body = doc.MainDocumentPart.Document.Body;
             {
-                var paras = body.Elements<Paragraph>();
-                foreach (var para in paras)
+                var paras = body.Descendants<Text>();
+                foreach (var text in paras)
                 {
-                    foreach (var run in para.Elements<Run>())
+                    if (text.Text.Contains(originText))
                     {
-                        foreach (var text in run.Elements<Text>())
-                        {
-                            if (text.Text.Contains(originText))
-                            {
-                                text.Text = text.Text.Replace(originText, destText);
-                            }
-                        }
+                        text.Text = text.Text.Replace(originText, destText);
                     }
                 }
             }
@@ -394,18 +388,12 @@ namespace KiteDoc
             var footer = doc.MainDocumentPart.FooterParts;
             foreach (var footerPart in footer)
             {
-                var paras = footerPart.Footer.Elements<Paragraph>();
-                foreach (var para in paras)
+                var paras = footerPart.Footer.Descendants<Text>();
+                foreach (var text in paras)
                 {
-                    foreach (var run in para.Elements<Run>())
+                    if (text.Text.Contains(originText))
                     {
-                        foreach (var text in run.Elements<Text>())
-                        {
-                            if (text.Text.Contains(originText))
-                            {
-                                text.Text = text.Text.Replace(originText, destText);
-                            }
-                        }
+                        text.Text = text.Text.Replace(originText, destText);
                     }
                 }
             }
@@ -413,18 +401,12 @@ namespace KiteDoc
             var header = doc.MainDocumentPart.HeaderParts;
             foreach (var headerPart in header)
             {
-                var paras = headerPart.Header.Elements<Paragraph>();
-                foreach (var para in paras)
+                var paras = headerPart.Header.Descendants<Text>();
+                foreach (var text in paras)
                 {
-                    foreach (var run in para.Elements<Run>())
+                    if (text.Text.Contains(originText))
                     {
-                        foreach (var text in run.Elements<Text>())
-                        {
-                            if (text.Text.Contains(originText))
-                            {
-                                text.Text = text.Text.Replace(originText, destText);
-                            }
-                        }
+                        text.Text = text.Text.Replace(originText, destText);
                     }
                 }
             }
@@ -439,7 +421,9 @@ namespace KiteDoc
         /// <param name="fontSize">指定字体大小，不指定时使用默认大小</param>
         public void ReplaceTextByBookmark(WordprocessingDocument doc, string bookmarkName, string text,float? fontSize = null)
         {
+            // 替换时需要考虑是移除书签，还是清空书签中的内容
             var bookmarkStart = RemoveBookmarkContent(doc, bookmarkName);
+            // todo: 使用书签替换文本时会出现样式恢复成默认样式的情况，原因是原来的书签中的样式文件丢失了，因此必须将原有的样式先存起来，再重新写回去
             InsertTextToBookmark(bookmarkStart, text,fontSize);
         }
 

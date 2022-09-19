@@ -208,21 +208,25 @@ namespace KiteDoc
             if (isBorder)
             {
                 // 单框线，Size=2 为1磅粗
-                tableProperties.AppendChild(new TableBorders(new TopBorder()
-                { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 2 },
-                    new BottomBorder()
-
-                    { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 2 },
-                    new LeftBorder()
-                    { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 2 },
-                    new RightBorder()
-                    { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 2 },
-                    new InsideHorizontalBorder()
-                    { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 2 },
-                    new InsideVerticalBorder()
-                    { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 2 }));
+                tableProperties.AppendChild(
+                    new TableBorders(
+                        // 上框线
+                        new TopBorder { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 2 },
+                        // 下框线
+                        new BottomBorder { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 2 },
+                        // 左框线
+                        new LeftBorder { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 2 },
+                        // 右框线
+                        new RightBorder { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 2 },
+                        // 内部水平线
+                        new InsideHorizontalBorder { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 2 },
+                        // 内部垂直线
+                        new InsideVerticalBorder { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 2 }
+                    )
+                );
             }
 
+            // 将样式添加到表格中
             table.AppendChild(tableProperties);
             return table;
         }
@@ -545,7 +549,7 @@ namespace KiteDoc
                             cellMerge: DocCellMergeEnum.VerticalContinue);
                     }
                     // 如果下一单元格没有数据，则开启合并单元格
-                    else if ((j + 1) < data.Count && string.IsNullOrEmpty(data[j+1][i]))
+                    else if ((j + 1) < data.Count && string.IsNullOrEmpty(data[j + 1][i]))
                     {
                         tableCell = GetTableCellObject(widthList[i], VerticalAlign.Center,
                             DocCellMergeEnum.VerticalStart);
