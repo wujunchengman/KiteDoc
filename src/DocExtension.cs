@@ -1,54 +1,118 @@
-﻿using DocumentFormat.OpenXml.Packaging;
+﻿using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Wordprocessing;
+using SixLabors.ImageSharp.Formats.Tiff.Compression.Decompressors;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace KiteDoc
 {
+    /// <summary>
+    /// 针对OpenXML提供的一系列扩展方法
+    /// </summary>
     public static class DocExtension
     {
+        /// <summary>
+        /// 替换Word中的字符串
+        /// </summary>
+        /// <param name="doc">Word文档对象</param>
+        /// <param name="oldString">旧文本（被替换的字符串）</param>
+        /// <param name="newString">新文本（新的需要的字符串）</param>
+        /// <returns></returns>
         public static int Replace(this WordprocessingDocument doc,string oldString,string newString)
         {
-            // 替换正文中的内容
-            var body = doc.MainDocumentPart.Document.Body;
+            // 获取所有的Text对象元素
+            var elements = doc.MainDocumentPart.Document.Descendants<Text>();
+            int count = 0;
+            foreach (var text in elements)
             {
-                var paras = body.Descendants<Text>();
-                foreach (var text in paras)
+                if (text.Text.Contains(oldString))
                 {
-                    if (text.Text.Contains(originText))
-                    {
-                        text.Text = text.Text.Replace(originText, destText);
-                    }
+                    text.Text = text.Text.Replace(oldString, newString);
+                    count++;
                 }
             }
-            // 替换页脚的内容
-            var footer = doc.MainDocumentPart.FooterParts;
-            foreach (var footerPart in footer)
-            {
-                var paras = footerPart.Footer.Descendants<Text>();
-                foreach (var text in paras)
-                {
-                    if (text.Text.Contains(originText))
-                    {
-                        text.Text = text.Text.Replace(originText, destText);
-                    }
-                }
-            }
+            return count;
+        }
 
-            var header = doc.MainDocumentPart.HeaderParts;
-            foreach (var headerPart in header)
+        /// <summary>
+        /// 替换Word中的字符串为表格
+        /// </summary>
+        /// <param name="doc"></param>
+        /// <param name="oldString"></param>
+        /// <param name="table"></param>
+        /// <returns></returns>
+        public static int Replace(this WordprocessingDocument doc,string oldString,Table table)
+        {
+            
+            return Replace(doc,oldString,table,true);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="doc"></param>
+        /// <param name="oldString"></param>
+        /// <param name="table"></param>
+        /// <param name="saveFormatting"></param>
+        /// <returns></returns>
+        public static int Replace(this WordprocessingDocument doc, string oldString, Table table,bool saveFormatting)
+        {
+
+            int count = 0;
+            var continueFlag = true;
+            // 使用while是因为替换后会破环foreach，需要再次去获取，否则会替换不完全
+            while (continueFlag)
             {
-                var paras = headerPart.Header.Descendants<Text>();
-                foreach (var text in paras)
+                // 获取所有的Text对象元素
+                var elements = doc.MainDocumentPart.Document.Descendants<Text>();
+                // 默认下次不扫了，如果这次找到了再变更为下次再扫
+                continueFlag = false;
+                foreach (var text in elements)
                 {
-                    if (text.Text.Contains(originText))
+                    // 找到包含指定文本的text对象
+                    if (text.Text.Contains(oldString))
                     {
-                        text.Text = text.Text.Replace(originText, destText);
+                        // 如果这次找到了，就再扫描一次
+                        continueFlag = true;
+
+                        if (saveFormatting)
+                        {
+
+                            // 得到Text的父对象run
+                            var r = text.Parent as Run;
+
+
+                            var runs = table.Descendants<Run>();
+                            foreach (var item in runs)
+                            {
+                                var rPr = r.RunProperties.Clone() as RunProperties;
+                                item.RunProperties = rPr;
+                            }
+                        }
+
+                        // 不能直接添加，要用Clone构造出来
+                        // 否则会报Cannot insert the OpenXmlElement "newChild" because it is part of a tree.异常
+                        var copy = table.Clone() as Table;
+
+                        OpenXmlElement element = text.Parent;
+
+                        // 找到挂载在根节点上的元素
+                        while (element.Parent is not Body)
+                        {
+                            element = element.Parent;
+                        }
+
+                        copy = doc.MainDocumentPart.Document.Body.ReplaceChild(copy, element) as Table;
+
+                        count++;
                     }
                 }
             }
+            
+            
+            return count;
         }
     }
 }
