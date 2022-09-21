@@ -98,13 +98,29 @@ namespace KiteDoc
 
                         OpenXmlElement element = text.Parent;
 
-                        // 找到挂载在根节点上的元素
-                        while (element.Parent is not Body)
+                        var tableParentNode = new string[]
+                        {
+                            "body","comment","customXml","docPartBody","endnote","footnote","ftr",
+                            "hdr","stdContent","tc"
+                        };
+
+                        // Table不能随意插入，父元素只能是以下元素
+                        while (!tableParentNode.Contains( element.Parent.XName.LocalName))
                         {
                             element = element.Parent;
                         }
 
-                        copy = doc.MainDocumentPart.Document.Body.ReplaceChild(copy, element) as Table;
+                        element.Parent.ReplaceChild(copy, element);
+
+                        // 如果是在Table中，则至少还要有一个P段落
+                        if (copy.Parent.XName.LocalName == "tc")
+                        {
+                            if (!copy.Parent.Elements<Paragraph>().Any())
+                            {
+                                copy.InsertAfterSelf(new Paragraph());
+                            }
+                            
+                        }
 
                         count++;
                     }

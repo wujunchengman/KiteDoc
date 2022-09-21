@@ -125,6 +125,25 @@ namespace KiteDocTest
         }
 
         [Fact]
+        public void ReplaceTableTextToNestTable()
+        {
+            var filename = "替换表格中的文本形成嵌套表格.docx";
+            string testPath = CopyTestFile(filename);
+
+            using (WordprocessingDocument doc = WordprocessingDocument.Open(testPath, true))
+            {
+                var table = TestTable;
+                var count = doc.Replace("表格", table);
+                Assert.Equal(1, count);
+            }
+
+            using (WordprocessingDocument doc = WordprocessingDocument.Open(testPath, false))
+            {
+                Assert.Equal(2, doc.MainDocumentPart.Document.Descendants<Table>().Count());
+            }
+        }
+
+        [Fact]
         public void ReplaceTextToTableSaveFormatting()
         {
             var filename = "替换文本为表格.docx";
@@ -138,19 +157,12 @@ namespace KiteDocTest
             using (WordprocessingDocument doc = WordprocessingDocument.Open(testPath, false))
             {
 
-                var c = doc.MainDocumentPart.Document.Descendants<Table>().Count();
+                var c = doc.MainDocumentPart.Document.Descendants<Table>().ToArray();
 
+                
 
-                var runs = new List<Run>();
-                foreach (var t in doc.MainDocumentPart.Document.Body.Descendants<Text>())
-                {
-                    Trace.WriteLine(t.Text);
-                    if (t.Text == "测试00")
-                    {
-                        var r = t.Parent as Run;
-                        runs.Add(r);
-                    }
-                }
+                var runs = c[1].Descendants<Run>();
+                
                 var dest = runs.Select(x => x.RunProperties.FontSize.Val.Value);
                 foreach (var item in dest)
                 {
