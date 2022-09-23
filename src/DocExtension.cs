@@ -40,24 +40,11 @@ namespace KiteDoc
         /// 替换Word中的字符串为表格
         /// </summary>
         /// <param name="doc"></param>
-        /// <param name="oldString"></param>
-        /// <param name="table"></param>
+        /// <param name="oldString">被替换的字符串</param>
+        /// <param name="table">目标表格</param>
+        /// <param name="saveFormatting">是否保留原格式</param>
         /// <returns></returns>
-        public static int Replace(this WordprocessingDocument doc,string oldString,Table table)
-        {
-            
-            return Replace(doc,oldString,table,true);
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="doc"></param>
-        /// <param name="oldString"></param>
-        /// <param name="table"></param>
-        /// <param name="saveFormatting"></param>
-        /// <returns></returns>
-        public static int Replace(this WordprocessingDocument doc, string oldString, Table table,bool saveFormatting)
+        public static int Replace(this WordprocessingDocument doc, string oldString, Table table,bool saveFormatting = true)
         {
 
             int count = 0;
