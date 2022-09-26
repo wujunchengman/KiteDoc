@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <SignAssembly>false</SignAssembly>
+	  <Nullable>enable</Nullable>
     <Version>0.1.9</Version>
     <Company>吴俊城</Company>
     <Product>吴俊城</Product>
