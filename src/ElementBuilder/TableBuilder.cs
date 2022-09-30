@@ -1,4 +1,5 @@
 ﻿using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Spreadsheet;
 using DocumentFormat.OpenXml.Wordprocessing;
 using System;
 using System.Collections.Generic;
@@ -29,12 +30,12 @@ namespace KiteDoc.ElementBuilder
         /// <summary>
         /// 表头数据
         /// </summary>
-        private string?[] tableHeader = Array.Empty<string>();
+        private List<string?> tableHeader = new();
 
         /// <summary>
         /// 内容数据
         /// </summary>
-        private string?[,] tableData = new string[0,0];
+        private List<List<string?>> tableData = new();
 
         /// <summary>
         /// 单元格内段落对齐方式
@@ -240,14 +241,68 @@ namespace KiteDoc.ElementBuilder
             return this;
         }
 
-
-        public Table Builder()
+        /// <summary>
+        /// 设置表格标题
+        /// </summary>
+        /// <param name="header">标题文字</param>
+        /// <returns></returns>
+        public TableBuilder SetTableHeader(List<string?> header)
         {
-            // 添加Table数据
+            tableHeader = header;
+            return this;
+        }
+
+        /// <summary>
+        /// 设置表格文字
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public TableBuilder SetTableData(List<List<string?>> data)
+        {
+            tableData = data;
+            return this;
+        }
+
+        /// <summary>
+        /// 生成Table对象
+        /// </summary>
+        /// <returns></returns>
+        public Table Build()
+        {
+
+            // 添加Table表头数据
+            if ((tableHeader != null) && tableHeader.Count != 0)
+            {
+                TableRow tableRow = new TableRow();
+                for (int i = 0; i < tableHeader.Count; i++)
+                {
+                    var tableCell = GetTableCellObject(widthList[i]);
+
+                    var paragraph = GetParagraphObject(HorizontalAlign.Center);
+
+                    var run = GetRunObject(true, fontSize);
+
+                    // 将标题内容添加到run对象中
+                    run.AppendChild(new Text(tableHead[i]));
+                    // 将run对象添加到段落中
+                    paragraph.AppendChild(run);
+                    // 将段落对象添加到单元格中
+                    tableCell.AppendChild(paragraph);
+                    // 将单元格添加到行中
+                    tableRow.AppendChild(tableCell);
+                }
+
+                // 将表头行添加到表格对象中
+                table.AppendChild(tableRow);
+            }
 
             // 添加Table数据时要将对应的行列的数据样式进行匹配
 
             // 添加定义的样式（绑定在Table上的表格样式）
+            tableProperties.AddChild(tableBorders);
+            tableProperties.AddChild(tableWidth);
+
+            
 
             return table;
 

@@ -13,11 +13,20 @@ namespace KiteDoc.ElementBuilder
     /// </summary>
     public class ParagraphBuilder
     {
+        /// <summary>
+        /// 是否已经构建过了
+        /// </summary>
         private bool buildFlag = false;
 
+        /// <summary>
+        /// 段落对象
+        /// </summary>
         private Paragraph paragraph = new Paragraph();
+
+        /// <summary>
+        /// 段落样式
+        /// </summary>
         private ParagraphProperties paragraphProperties = new ParagraphProperties();
-        // 段落样式
 
         /// <summary>
         /// 设置首行缩进
@@ -61,6 +70,37 @@ namespace KiteDoc.ElementBuilder
         }
 
         /// <summary>
+        /// 添加普通文本到段落
+        /// </summary>
+        /// <param name="text">内容文本</param>
+        /// <param name="isBold">是否加粗</param>
+        /// <param name="fontSize">文字大小</param>
+        /// <param name="font">字体</param>
+        /// <returns></returns>
+        public ParagraphBuilder AppendText(string text,bool isBold = false,float? fontSize = null,string font = "宋体")
+        {
+            var run = new RunBuilder()
+                .SetFont(font)
+                .SetFontSize(fontSize)
+                .SetBold(isBold)
+                .AppendText(text)
+                .Build();
+            paragraph.AddChild(run);
+            return this;
+        }
+
+        /// <summary>
+        /// 添加Run对象到段落中
+        /// </summary>
+        /// <param name="run">Doc文档的Run对象</param>
+        /// <returns></returns>
+        public ParagraphBuilder AppendRun(Run run)
+        {
+            paragraph.AddChild(run);
+            return this;
+        }
+
+        /// <summary>
         /// 构造paragraph对象
         /// </summary>
         /// <returns></returns>
@@ -69,7 +109,7 @@ namespace KiteDoc.ElementBuilder
             if (!buildFlag)
             {
                 // 应用样式
-                paragraph.AppendChild(paragraphProperties);
+                paragraph.ParagraphProperties = paragraphProperties;
                 return paragraph;
             }
             else
