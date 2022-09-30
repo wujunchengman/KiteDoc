@@ -276,16 +276,15 @@ namespace KiteDoc.ElementBuilder
                 TableRow tableRow = new TableRow();
                 for (int i = 0; i < tableHeader.Count; i++)
                 {
+                    // 获得一个单元格，需要判断单元格是否需要合并，怎么合并
                     var tableCell = GetTableCellObject(widthList[i]);
 
-                    var paragraph = GetParagraphObject(HorizontalAlign.Center);
+                    var paragraph = new ParagraphBuilder()
+                        .AppendText(tableHeader[i])
+                        .SetJustification(JustificationValues.Center)
+                        .Build();
 
-                    var run = GetRunObject(true, fontSize);
 
-                    // 将标题内容添加到run对象中
-                    run.AppendChild(new Text(tableHead[i]));
-                    // 将run对象添加到段落中
-                    paragraph.AppendChild(run);
                     // 将段落对象添加到单元格中
                     tableCell.AppendChild(paragraph);
                     // 将单元格添加到行中

@@ -34,7 +34,7 @@ namespace KiteDoc.ElementBuilder
         /// <param name="indentationForTheFirstLine">是否首行缩进</param>
         /// <param name="lineChars">首行缩进值</param>
         /// <returns></returns>
-        public ParagraphBuilder SetFirstLineChars(bool indentationForTheFirstLine = true,int lineChars = 200)
+        public ParagraphBuilder SetFirstLineChars(bool indentationForTheFirstLine = true, int lineChars = 200)
         {
             if (paragraphProperties.Indentation == null)
             {
@@ -62,7 +62,7 @@ namespace KiteDoc.ElementBuilder
         /// </summary>
         /// <param name="values">对齐方式</param>
         /// <returns></returns>
-        public ParagraphBuilder SetJustification(JustificationValues values)
+        public ParagraphBuilder SetJustification(JustificationValues values = JustificationValues.Center)
         {
             paragraphProperties.Justification = new Justification()
             { Val = new EnumValue<JustificationValues>(values) };
@@ -77,15 +77,20 @@ namespace KiteDoc.ElementBuilder
         /// <param name="fontSize">文字大小</param>
         /// <param name="font">字体</param>
         /// <returns></returns>
-        public ParagraphBuilder AppendText(string text,bool isBold = false,float? fontSize = null,string font = "宋体")
+        public ParagraphBuilder AppendText(string? text, bool isBold = false, float? fontSize = null, string font = "宋体")
         {
-            var run = new RunBuilder()
-                .SetFont(font)
-                .SetFontSize(fontSize)
-                .SetBold(isBold)
-                .AppendText(text)
-                .Build();
-            paragraph.AddChild(run);
+            if (!string.IsNullOrEmpty(text))
+            {
+                var run = new RunBuilder()
+                    .SetFont(font)
+                    .SetFontSize(fontSize)
+                    .SetBold(isBold)
+                    .AppendText(text)
+                    .Build();
+                paragraph.AddChild(run);
+            }
+
+
             return this;
         }
 
