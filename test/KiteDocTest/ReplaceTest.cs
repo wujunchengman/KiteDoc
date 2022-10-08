@@ -173,6 +173,19 @@ namespace KiteDocTest
             }
         }
 
+        [Fact]
+        public void ReplaceTextToTableSplitRun()
+        {
+            var filename = "替换分段Run的文本.docx";
+            string testPath = CopyTestFile(filename);
+            using (WordprocessingDocument doc = WordprocessingDocument.Open(testPath, true))
+            {
+                var table = TestTable;
+                var count = doc.Replace("{GroupMembers}", table, true);
+                Assert.Equal(2, count);
+            }
+        }
+
         private static string CopyTestFile(string filename)
         {
             var filePath = "StaticResource" + Path.DirectorySeparatorChar + filename;
