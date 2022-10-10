@@ -1,5 +1,5 @@
 ﻿using DocumentFormat.OpenXml;
-using DocumentFormat.OpenXml.Spreadsheet;
+using DocumentFormat.OpenXml.Vml;
 using DocumentFormat.OpenXml.Wordprocessing;
 using System;
 using System.Collections.Generic;
@@ -26,6 +26,11 @@ namespace KiteDoc.ElementBuilder
         /// 单元格宽度
         /// </summary>
         private TableCellWidth[,] tableCellWidth = new TableCellWidth[0, 0];
+
+        /// <summary>
+        /// 表头单元格宽度
+        /// </summary>
+        private TableCellWidth[] tableHeaderCellWidth = Array.Empty<TableCellWidth>();
 
         /// <summary>
         /// 表头数据
@@ -253,6 +258,23 @@ namespace KiteDoc.ElementBuilder
         }
 
         /// <summary>
+        /// 设置表格标题单元格宽度
+        /// </summary>
+        /// <param name="tableWidthType">宽度类型</param>
+        /// <param name="width">宽度值</param>
+        /// <returns></returns>
+        public TableBuilder SetTableHeaderCellWidth(TableWidthType tableWidthType, float[] width)
+        {
+            tableHeaderCellWidth = new TableCellWidth[width.Length];
+
+            for (int i = 0; i < width.Length; i++)
+            {
+                tableHeaderCellWidth[i] = new TableCellWidth(width[i], tableWidthType);
+            }
+            return this;
+        }
+
+        /// <summary>
         /// 设置表格文字
         /// </summary>
         /// <param name="data"></param>
@@ -270,6 +292,35 @@ namespace KiteDoc.ElementBuilder
         public Table Build()
         {
 
+
+            // 添加Table数据时要将对应的行列的数据样式进行匹配
+
+            // 添加定义的样式（绑定在Table上的表格样式）
+            tableProperties.TableBorders = tableBorders;
+            tableProperties.TableWidth = tableWidth;
+
+            var tblPr =table.Elements<TableProperties>();
+            foreach (var item in tblPr)
+            {
+                item.Remove();
+            }
+
+            // 样式属性必须在子元素的第一个
+            table.AppendChild(tableProperties);
+
+
+            
+
+            // 如果没有指定表头宽度则全部指定为自动
+            if (tableHeaderCellWidth.Length==0)
+            {
+                tableHeaderCellWidth = new TableCellWidth[tableHeader.Count];
+                for (int i = 0; i < tableHeader.Count; i++)
+                {
+                    tableHeaderCellWidth[i] = new TableCellWidth(0,TableWidthType.Auto);
+                }
+            }
+
             // 添加Table表头数据
             if ((tableHeader != null) && tableHeader.Count != 0)
             {
@@ -277,7 +328,8 @@ namespace KiteDoc.ElementBuilder
                 for (int i = 0; i < tableHeader.Count; i++)
                 {
                     // 获得一个单元格，需要判断单元格是否需要合并，怎么合并
-                    var tableCell = GetTableCellObject(widthList[i]);
+                    var tableCell = new TableCellBuilder().SetTableCellWidth(tableHeaderCellWidth[i]).Build();
+                    //var tableCell = GetTableCellObject(widthList[i]);
 
                     var paragraph = new ParagraphBuilder()
                         .AppendText(tableHeader[i])
@@ -295,11 +347,126 @@ namespace KiteDoc.ElementBuilder
                 table.AppendChild(tableRow);
             }
 
-            // 添加Table数据时要将对应的行列的数据样式进行匹配
+            
+            if(tableData.Count>0)
+            {
+                var rowsCount = tableData.Count;
+                var colCount = tableData[0].Count;
 
-            // 添加定义的样式（绑定在Table上的表格样式）
-            tableProperties.AddChild(tableBorders);
-            tableProperties.AddChild(tableWidth);
+                // 将表格宽度配置统一成统一格式
+                {
+                    // 可能没有指定宽度
+                    if (tableCellWidth.Length == 0)
+                    {
+                        // 重设表格宽度大小
+                        tableCellWidth = new TableCellWidth[rowsCount, colCount];
+
+                        // 如果设置了表头宽度
+                        if (tableHeaderCellWidth.Length != 0)
+                        {
+
+                            for (int i = 0; i < rowsCount; i++)
+                            {
+                                for (int j = 0; j < colCount; j++)
+                                {
+                                    tableCellWidth[i, j] = tableHeaderCellWidth[j];
+                                }
+                            }
+                        }
+                        else
+                        {
+                            for (int i = 0; i < rowsCount; i++)
+                            {
+                                for (int j = 0; j < colCount; j++)
+                                {
+                                    tableCellWidth[i, j] = new TableCellWidth(0, TableWidthType.Auto);
+                                }
+                            }
+                        }
+                    }
+                    // 可能指定了单个宽度
+                    else
+                    {
+                        throw new ArgumentException("目前仅支持设置表格头部宽度");
+                    }
+                    // 可能指定了一行宽度
+
+                    // 可能指定了详细宽度
+                }
+
+                // 将表格对齐方式配置格式统一
+                {
+                    // 没有设置的情况
+                    if (justificationValues.Length==0)
+                    {
+                        justificationValues = new JustificationValues[rowsCount, colCount];
+                        for (int i = 0; i < rowsCount; i++)
+                        {
+                            for (int j = 0; j < colCount; j++)
+                            {
+                                justificationValues[i, j] = JustificationValues.Left;
+                            }
+                        }
+                    }
+                    // 设置了所有单元格统一对齐方式的情况
+                    else if (justificationValues.Length == 1)
+                    {
+                        var val = justificationValues[0, 0];
+                        justificationValues = new JustificationValues[rowsCount, colCount];
+                        for (int i = 0; i < rowsCount; i++)
+                        {
+                            for (int j = 0; j < colCount; j++)
+                            {
+                                justificationValues[i, j] = val;
+                            }
+                        }
+                    }
+                    // 只有一行，一行有多个值的情况
+                    else if (justificationValues.GetLength(0) == 1&&justificationValues.GetLength(1)>1)
+                    {
+                        var val = new JustificationValues[rowsCount, colCount];
+                        for (int i = 0; i < rowsCount; i++)
+                        {
+                            for (int j = 0; j < colCount; j++)
+                            {
+                                val[i, j] = justificationValues[0,j];
+                            }
+                        }
+                        justificationValues = val;
+                    }
+                    else
+                    {
+                        throw new ArgumentException("暂不支持详细配置水平对齐方式");
+                    }
+                }
+
+                for (int i = 0; i < tableData.Count; i++)
+                {
+                    TableRow tableRow = new TableRow();
+                    for (int j = 0; j < tableData[0].Count; j++)
+                    {
+                        // 获得一个单元格，需要判断单元格是否需要合并，怎么合并
+                        var tableCell = new TableCellBuilder()
+                            .SetTableCellWidth(tableCellWidth[i, j])
+                            .Build();
+
+                        var paragraph = new ParagraphBuilder()
+                            .AppendText(tableData[i][j])
+                            .SetJustification(justificationValues[i, j])
+                            .Build();
+
+
+                        // 将段落对象添加到单元格中
+                        tableCell.AppendChild(paragraph);
+                        // 将单元格添加到行中
+                        tableRow.AppendChild(tableCell);
+                    }
+
+                    table.AppendChild(tableRow);
+                }
+
+            }
+
 
             
 
