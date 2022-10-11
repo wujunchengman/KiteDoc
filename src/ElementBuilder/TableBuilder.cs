@@ -285,6 +285,10 @@ namespace KiteDoc.ElementBuilder
             return this;
         }
 
+        // todo: 设置水平合并
+
+        // todo: 设置垂直合并
+
         /// <summary>
         /// 生成Table对象
         /// </summary>
