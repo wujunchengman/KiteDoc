@@ -52,6 +52,16 @@ namespace KiteDoc.ElementBuilder
         private TableVerticalAlignmentValues[,] tableVerticalAlignmentValues = new TableVerticalAlignmentValues[0, 0];
 
         /// <summary>
+        /// 分割段落字符串
+        /// </summary>
+        private string? splitString;
+
+        /// <summary>
+        /// 是否对分割段落进行编号
+        /// </summary>
+        private bool isSerialNumber;
+
+        /// <summary>
         /// 设置表格框线
         /// </summary>
         /// <param name="tableborderScope">边框范围</param>
@@ -182,7 +192,7 @@ namespace KiteDoc.ElementBuilder
 
             for (int i = 0; i < width.Length; i++)
             {
-                tableCellWidth[0,i] = new TableCellWidth(width[i], tableWidthType);
+                tableCellWidth[0, i] = new TableCellWidth(width[i], tableWidthType);
             }
 
             return this;
@@ -196,14 +206,14 @@ namespace KiteDoc.ElementBuilder
         /// <returns></returns>
         public TableBuilder SetTableCellWidth(TableWidthType tableWidthType, float[,] width)
         {
-            if (width.Length!=0)
+            if (width.Length != 0)
             {
                 tableCellWidth = new TableCellWidth[width.GetLength(0), width.GetLength(1)];
                 for (int i = 0; i < width.GetLength(0); i++)
                 {
                     for (int j = 0; j < width.GetLength(1); j++)
                     {
-                        tableCellWidth[i,j] = new TableCellWidth(width[i,j],tableWidthType);
+                        tableCellWidth[i, j] = new TableCellWidth(width[i, j], tableWidthType);
                     }
                 }
 
@@ -218,7 +228,7 @@ namespace KiteDoc.ElementBuilder
         /// <returns></returns>
         public TableBuilder SetJustification(JustificationValues align = JustificationValues.Center)
         {
-            justificationValues = new JustificationValues[1,1] { { align } };
+            justificationValues = new JustificationValues[1, 1] { { align } };
             return this;
         }
 
@@ -229,9 +239,9 @@ namespace KiteDoc.ElementBuilder
         /// <returns></returns>
         public TableBuilder SetJustification(JustificationValues[] align)
         {
-            justificationValues = new JustificationValues[1,align.Length];
+            justificationValues = new JustificationValues[1, align.Length];
             // 利用内存复制将一维数组赋值到二维数组
-            Buffer.BlockCopy(align, 0, justificationValues, 0, align.Length*sizeof(JustificationValues));
+            Buffer.BlockCopy(align, 0, justificationValues, 0, align.Length * sizeof(JustificationValues));
             return this;
         }
 
@@ -285,6 +295,20 @@ namespace KiteDoc.ElementBuilder
             return this;
         }
 
+        /// <summary>
+        /// 设置表格内文字段落换行
+        /// </summary>
+        /// <param name="splitString">分割字符换</param>
+        /// <param name="isSerialNumber">是否对分割后的段落编号</param>
+        /// <returns></returns>
+        public TableBuilder SetDataSplitParagraph(string splitString, bool isSerialNumber)
+        {
+            this.splitString = splitString;
+            this.isSerialNumber = isSerialNumber;
+            return this;
+        }
+
+
         // todo: 设置水平合并
 
         // todo: 设置垂直合并
@@ -303,7 +327,7 @@ namespace KiteDoc.ElementBuilder
             tableProperties.TableBorders = tableBorders;
             tableProperties.TableWidth = tableWidth;
 
-            var tblPr =table.Elements<TableProperties>();
+            var tblPr = table.Elements<TableProperties>();
             foreach (var item in tblPr)
             {
                 item.Remove();
@@ -313,15 +337,15 @@ namespace KiteDoc.ElementBuilder
             table.AppendChild(tableProperties);
 
 
-            
+
 
             // 如果没有指定表头宽度则全部指定为自动
-            if (tableHeaderCellWidth.Length==0)
+            if (tableHeaderCellWidth.Length == 0)
             {
                 tableHeaderCellWidth = new TableCellWidth[tableHeader.Count];
                 for (int i = 0; i < tableHeader.Count; i++)
                 {
-                    tableHeaderCellWidth[i] = new TableCellWidth(0,TableWidthType.Auto);
+                    tableHeaderCellWidth[i] = new TableCellWidth(0, TableWidthType.Auto);
                 }
             }
 
@@ -351,8 +375,8 @@ namespace KiteDoc.ElementBuilder
                 table.AppendChild(tableRow);
             }
 
-            
-            if(tableData.Count>0)
+
+            if (tableData.Count > 0)
             {
                 var rowsCount = tableData.Count;
                 var colCount = tableData[0].Count;
@@ -401,7 +425,7 @@ namespace KiteDoc.ElementBuilder
                 // 将表格对齐方式配置格式统一
                 {
                     // 没有设置的情况
-                    if (justificationValues.Length==0)
+                    if (justificationValues.Length == 0)
                     {
                         justificationValues = new JustificationValues[rowsCount, colCount];
                         for (int i = 0; i < rowsCount; i++)
@@ -426,14 +450,14 @@ namespace KiteDoc.ElementBuilder
                         }
                     }
                     // 只有一行，一行有多个值的情况
-                    else if (justificationValues.GetLength(0) == 1&&justificationValues.GetLength(1)>1)
+                    else if (justificationValues.GetLength(0) == 1 && justificationValues.GetLength(1) > 1)
                     {
                         var val = new JustificationValues[rowsCount, colCount];
                         for (int i = 0; i < rowsCount; i++)
                         {
                             for (int j = 0; j < colCount; j++)
                             {
-                                val[i, j] = justificationValues[0,j];
+                                val[i, j] = justificationValues[0, j];
                             }
                         }
                         justificationValues = val;
@@ -444,39 +468,95 @@ namespace KiteDoc.ElementBuilder
                     }
                 }
 
-                for (int i = 0; i < tableData.Count; i++)
+                // 如果制定了分割字符串就对内容进行分割判断
+                if (splitString != null)
                 {
-                    TableRow tableRow = new TableRow();
-                    for (int j = 0; j < tableData[0].Count; j++)
+                    for (int i = 0; i < tableData.Count; i++)
                     {
-                        // 获得一个单元格，需要判断单元格是否需要合并，怎么合并
-                        var tableCell = new TableCellBuilder()
-                            .SetTableCellWidth(tableCellWidth[i, j])
-                            .Build();
+                        TableRow tableRow = new TableRow();
+                        for (int j = 0; j < tableData[0].Count; j++)
+                        {
+                            // 获得一个单元格，需要判断单元格是否需要合并，怎么合并
+                            var tableCell = new TableCellBuilder()
+                                .SetTableCellWidth(tableCellWidth[i, j])
+                                .Build();
 
-                        var paragraph = new ParagraphBuilder()
-                            .AppendText(tableData[i][j])
-                            .SetJustification(justificationValues[i, j])
-                            .Build();
+                            var split = tableData[i][j]?.Split(splitString);
+
+                            if (split != null)
+                            {
+                                for (int k = 0; k < split.Length; k++)
+                                {
+                                    Paragraph paragraph;
+                                    if (isSerialNumber)
+                                    {
+                                        paragraph = new ParagraphBuilder()
+                                           .AppendText((i + 1) + ". " + tableData[i][j])
+                                           .SetJustification(justificationValues[i, j])
+                                           .Build();
+                                    }
+                                    else
+                                    {
+                                        paragraph = new ParagraphBuilder()
+                                           .AppendText(tableData[i][j])
+                                           .SetJustification(justificationValues[i, j])
+                                           .Build();
+                                    }
 
 
-                        // 将段落对象添加到单元格中
-                        tableCell.AppendChild(paragraph);
-                        // 将单元格添加到行中
-                        tableRow.AppendChild(tableCell);
+
+                                    // 将段落对象添加到单元格中
+                                    tableCell.AppendChild(paragraph);
+                                }
+                            }
+
+
+
+                            // 将单元格添加到行中
+                            tableRow.AppendChild(tableCell);
+                        }
+
+                        table.AppendChild(tableRow);
                     }
-
-                    table.AppendChild(tableRow);
                 }
+                else
+                {
+                    for (int i = 0; i < tableData.Count; i++)
+                    {
+                        TableRow tableRow = new TableRow();
+                        for (int j = 0; j < tableData[0].Count; j++)
+                        {
+                            // 获得一个单元格，需要判断单元格是否需要合并，怎么合并
+                            var tableCell = new TableCellBuilder()
+                                .SetTableCellWidth(tableCellWidth[i, j])
+                                .Build();
+
+                            var paragraph = new ParagraphBuilder()
+                                .AppendText(tableData[i][j])
+                                .SetJustification(justificationValues[i, j])
+                                .Build();
+
+
+                            // 将段落对象添加到单元格中
+                            tableCell.AppendChild(paragraph);
+                            // 将单元格添加到行中
+                            tableRow.AppendChild(tableCell);
+                        }
+
+                        table.AppendChild(tableRow);
+                    }
+                }
+
+
 
             }
 
 
-            
+
 
             return table;
 
-            
+
         }
 
     }
