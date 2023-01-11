@@ -1,14 +1,10 @@
-using DocumentFormat.OpenXml.Packaging;
-using KiteDoc.Interface;
-using KiteDoc;
-using System;
-using Xunit;
-using System.IO;
-using DocumentFormat.OpenXml.Wordprocessing;
 using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Wordprocessing;
+using KiteDoc;
+using System.IO;
 using System.Linq;
-using System.Collections.Generic;
-using System.Diagnostics;
+using Xunit;
 using Xunit.Abstractions;
 
 namespace KiteDocTest

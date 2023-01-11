@@ -126,7 +126,7 @@ namespace KiteDoc
         public TableCell GetTableCellObject(
             int width,
             VerticalAlign verticalAlign = VerticalAlign.Center,
-            DocCellMergeEnum cellMerge = DocCellMergeEnum.Normal
+            TableCellMergeEnum cellMerge = TableCellMergeEnum.Normal
         )
         {
             TableCell tableCell = new TableCell();
@@ -158,27 +158,27 @@ namespace KiteDoc
             // 添加合并单元格标记
             switch (cellMerge)
             {
-                case DocCellMergeEnum.Normal:
+                case TableCellMergeEnum.Normal:
                     break;
-                case DocCellMergeEnum.HorizontalStart:
+                case TableCellMergeEnum.HorizontalStart:
                     //Console.WriteLine("start");
                     tableCellProperties.AppendChild(new HorizontalMerge()
                     { Val = new EnumValue<MergedCellValues>(MergedCellValues.Restart) });
                     break;
-                case DocCellMergeEnum.HorizontalContinue:
+                case TableCellMergeEnum.HorizontalContinue:
                     //Console.WriteLine("continue");
                     tableCellProperties.AppendChild(new HorizontalMerge()
                     { Val = new EnumValue<MergedCellValues>(MergedCellValues.Continue) });
                     break;
-                case DocCellMergeEnum.VerticalStart:
+                case TableCellMergeEnum.VerticalStart:
                     tableCellProperties.AppendChild(new VerticalMerge()
                     { Val = new EnumValue<MergedCellValues>(MergedCellValues.Restart) });
                     break;
-                case DocCellMergeEnum.VerticalContinue:
+                case TableCellMergeEnum.VerticalContinue:
                     tableCellProperties.AppendChild(new VerticalMerge()
                     { Val = new EnumValue<MergedCellValues>(MergedCellValues.Continue) });
                     break;
-                case DocCellMergeEnum.HorizontalAndVerticalStart:
+                case TableCellMergeEnum.HorizontalAndVerticalStart:
                     tableCellProperties.AppendChild(new VerticalMerge()
                     { Val = new EnumValue<MergedCellValues>(MergedCellValues.Restart) });
                     tableCellProperties.AppendChild(new VerticalMerge()
@@ -284,14 +284,14 @@ namespace KiteDoc
                     if (string.IsNullOrEmpty(rowList[i]))
                     {
                         tableCell = GetTableCellObject(widthList[i],
-                            cellMerge: DocCellMergeEnum.HorizontalContinue);
+                            cellMerge: TableCellMergeEnum.HorizontalContinue);
                     }
 
                     else if ((i + 1) < rowLength && string.IsNullOrEmpty(rowList[i + 1]))
                     {
                         //Console.WriteLine(rowList[i]);
                         tableCell = GetTableCellObject(widthList[i], VerticalAlign.Center,
-                            DocCellMergeEnum.HorizontalStart);
+                            TableCellMergeEnum.HorizontalStart);
                     }
                     else
                     {
@@ -402,14 +402,14 @@ namespace KiteDoc
                             if (string.IsNullOrEmpty(rowList[i]))
                             {
                                 tableCell = GetTableCellObject(widthList[i],
-                                    cellMerge: DocCellMergeEnum.HorizontalContinue);
+                                    cellMerge: TableCellMergeEnum.HorizontalContinue);
                             }
                             // 如果下一单元格没有数据，则开启合并单元格
                             else if ((i + 1) < rowList.Length && string.IsNullOrEmpty(rowList[i + 1]))
                             {
                                 //Console.WriteLine(rowList[i]);
                                 tableCell = GetTableCellObject(widthList[i], VerticalAlign.Top,
-                                    DocCellMergeEnum.HorizontalStart);
+                                    TableCellMergeEnum.HorizontalStart);
                             }
                             else
                             {
@@ -546,13 +546,13 @@ namespace KiteDoc
                     if (string.IsNullOrEmpty(data[j][i]))
                     {
                         tableCell = GetTableCellObject(widthList[i],
-                            cellMerge: DocCellMergeEnum.VerticalContinue);
+                            cellMerge: TableCellMergeEnum.VerticalContinue);
                     }
                     // 如果下一单元格没有数据，则开启合并单元格
                     else if ((j + 1) < data.Count && string.IsNullOrEmpty(data[j + 1][i]))
                     {
                         tableCell = GetTableCellObject(widthList[i], VerticalAlign.Center,
-                            DocCellMergeEnum.VerticalStart);
+                            TableCellMergeEnum.VerticalStart);
                     }
                     else
                     {
@@ -705,12 +705,12 @@ namespace KiteDoc
                         {
                             //Console.WriteLine(rowList[i]);
                             tableCell = GetTableCellObject(widthList[i], VerticalAlign.Top,
-                                DocCellMergeEnum.HorizontalStart);
+                                TableCellMergeEnum.HorizontalStart);
                         }
                         else if (string.IsNullOrEmpty(rowList[i]))
                         {
                             tableCell = GetTableCellObject(widthList[i],
-                                cellMerge: DocCellMergeEnum.HorizontalContinue);
+                                cellMerge: TableCellMergeEnum.HorizontalContinue);
                         }
                         else
                         {

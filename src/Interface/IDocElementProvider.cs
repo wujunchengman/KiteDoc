@@ -51,7 +51,7 @@ namespace KiteDoc.Interface
         TableCell GetTableCellObject(
             int width,
             VerticalAlign verticalAlign = VerticalAlign.Center,
-            DocCellMergeEnum cellMerge = DocCellMergeEnum.Normal
+            TableCellMergeEnum cellMerge = TableCellMergeEnum.Normal
         );
 
         /// <summary>

@@ -3,7 +3,7 @@
     /// <summary>
     /// 单元格合并
     /// </summary>
-    public enum DocCellMergeEnum
+    public enum TableCellMergeEnum
     {
         /// <summary>
         /// 普通

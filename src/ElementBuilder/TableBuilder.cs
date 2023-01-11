@@ -1,6 +1,7 @@
 ﻿using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Vml;
 using DocumentFormat.OpenXml.Wordprocessing;
+using KiteDoc.Enum;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,6 +18,8 @@ namespace KiteDoc.ElementBuilder
         private Table table = new Table();
         private TableProperties tableProperties = new TableProperties();
         private TableBorders tableBorders = new TableBorders();
+        private TableCellMergeType tableCellMerge = TableCellMergeType.None;
+
         /// <summary>
         /// 表格宽度
         /// </summary>
@@ -310,6 +313,19 @@ namespace KiteDoc.ElementBuilder
 
 
         // todo: 设置水平合并
+        /// <summary>
+        /// 设置水平方向的Null内容合并
+        /// </summary>
+        /// <param name="merge"></param>
+        /// <returns></returns>
+        public TableBuilder SetHorizationNullMerge(bool merge = true)
+        {
+            if (merge)
+            {
+                tableCellMerge = TableCellMergeType.HorizontalNullMerge;
+            }
+            return this;
+        }
 
         // todo: 设置垂直合并
 
@@ -526,8 +542,28 @@ namespace KiteDoc.ElementBuilder
                         TableRow tableRow = new TableRow();
                         for (int j = 0; j < tableData[0].Count; j++)
                         {
-                            // 获得一个单元格，需要判断单元格是否需要合并，怎么合并
-                            var tableCell = new TableCellBuilder()
+                            var tableCellBuilder = new TableCellBuilder();
+
+                            // 如果是水平Null值合并
+                            if (tableCellMerge == TableCellMergeType.HorizontalNullMerge)
+                            {
+                                // 如果是null值，则是继续合并
+                                if (tableData[i][j]==null)
+                                {
+                                    tableCellBuilder.SetTableCellMerge(TableCellMerge.HorizontalContinue);
+                                }
+                                // 如果下一单元格没有数据，则开启合并单元格
+                                else if ((j + 1) < tableData[i].Count && tableData[i][j + 1]==null)
+                                {
+                                    tableCellBuilder.SetTableCellMerge(TableCellMerge.HorizontalStart);
+                                }
+                                else
+                                {
+                                    // 普通情况不需要合并
+                                }
+                            }
+
+                            var tableCell = tableCellBuilder
                                 .SetTableCellWidth(tableCellWidth[i, j])
                                 .Build();
 
@@ -550,8 +586,6 @@ namespace KiteDoc.ElementBuilder
 
 
             }
-
-
 
 
             return table;
@@ -671,4 +705,21 @@ namespace KiteDoc.ElementBuilder
         InsideVertical
 
     }
+
+    /// <summary>
+    /// 表格合并方式
+    /// </summary>
+    public enum TableCellMergeType
+    {
+        /// <summary>
+        /// 不合并
+        /// </summary>
+        None,
+        /// <summary>
+        /// 水平Null合并
+        /// </summary>
+        HorizontalNullMerge,
+
+    }
+
 }
