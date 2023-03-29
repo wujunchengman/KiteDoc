@@ -30,9 +30,21 @@ namespace KiteDocTest
             using (WordprocessingDocument doc = WordprocessingDocument.Open(testPath, true))
             {
                 var count = doc.Replace("假装", "改变之后的目标文本");
-                Assert.Equal(4, count);
+                Assert.Equal(5, count);
             }
             //File.Delete(testPath);
+        }
+
+        [Fact]
+        public void ReplaceTextSplitRun()
+        {
+            var filename = "替换分段Run的文本.docx";
+            string testPath = CopyTestFile(filename);
+            using (WordprocessingDocument doc = WordprocessingDocument.Open(testPath, true))
+            {
+                var count = doc.Replace("{GroupMembers}", "新的字符串");
+                Assert.Equal(2, count);
+            }
         }
 
         public Table TestTable { get {
