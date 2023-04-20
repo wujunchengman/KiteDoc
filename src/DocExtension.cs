@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Xml;
 using System.Xml.Linq;
 
 namespace KiteDoc
@@ -27,12 +28,36 @@ namespace KiteDoc
         public static int Replace(this WordprocessingDocument doc,string oldString,string newString)
         {
             // 获取所有的Text对象元素
-            var elements = doc.MainDocumentPart.Document.Descendants<Text>().ToArray();
+            var elements = doc.FindAllTextElement();
+
+            return ReplaceString(elements,oldString,newString);
+        }
+
+        /// <summary>
+        /// 批量替换Word中的字符串
+        /// </summary>
+        /// <param name="doc">Word文档对象</param>
+        /// <param name="keyValuePairs">替换键值对，Key为旧字符串，value为新字符串</param>
+        /// <returns></returns>
+        public static List<int> Replace(this WordprocessingDocument doc, IEnumerable<KeyValuePair<string,string>> keyValuePairs)
+        {
+            var result = new List<int>(keyValuePairs.Count());
+            // 获取所有的Text对象元素
+            var elements = doc.FindAllTextElement();
+            foreach (var item in keyValuePairs)
+            {
+                result.Add( ReplaceString(elements, item.Key, item.Value));
+            }
+            return result;
+        }
+
+        private static int ReplaceString(Text[]? elements, string oldString,string newString)
+        {
             int count = 0;
             var waitReplace = FindRun(elements, oldString);
             foreach (var item in waitReplace)
             {
-                if (item.Count==1)
+                if (item.Count == 1)
                 {
                     var text = item[0].Descendants<Text>().FirstOrDefault();
                     text.Text = text.Text.Replace(oldString, newString);
@@ -44,7 +69,7 @@ namespace KiteDoc
                     // 把所有Run的Text拼到一起，然后去替换对应的文本
                     var dest = string.Concat(item.Select(x => x.Descendants<Text>().FirstOrDefault()).Select(t => t.Text));
 
-                    text.Text = dest.Replace(oldString,newString);
+                    text.Text = dest.Replace(oldString, newString);
 
                     // todo: 需要考虑最后一个Run对象中是否还有其他的文本
                     foreach (var run in item.Skip(1))
@@ -57,15 +82,6 @@ namespace KiteDoc
             }
 
 
-            
-            //foreach (var text in elements)
-            //{
-            //    if (text.Text.Contains(oldString))
-            //    {
-            //        text.Text = text.Text.Replace(oldString, newString);
-            //        count++;
-            //    }
-            //}
             return count;
         }
 
@@ -80,13 +96,36 @@ namespace KiteDoc
         public static int Replace(this WordprocessingDocument doc, string oldString, Table table,bool saveFormatting = true)
         {
 
-            int count = 0;
-
             // 获得所有的文本元素
-            var elements = doc.MainDocumentPart.Document.Descendants<Text>().ToArray();
-            // 
+            var elements = doc.FindAllTextElement();
 
-            var waitReplace = FindRun(elements,oldString);
+            return ReplaceTable(elements, oldString, table, saveFormatting);
+
+            
+        }
+
+        /// <summary>
+        /// 批量替换Word中的字符串为表格
+        /// </summary>
+        /// <param name="doc">Word文档对象</param>
+        /// <param name="replaces">替换参数组</param>
+        /// <returns></returns>
+        public static List<int> Replace(this WordprocessingDocument doc,IEnumerable<BatchReplaceStringToTable> replaces)
+        {
+            var result = new List<int>();
+            var elements = doc.FindAllTextElement();
+            foreach (var item in replaces)
+            {
+                result.Add( ReplaceTable(elements,item.OldString,item.Table,item.SaveFormatting));
+            }
+
+            return result;
+        }
+
+        private static int ReplaceTable(Text[]? elements,string oldString,Table table,bool saveFormatting = true)
+        {
+            int count = 0;
+            var waitReplace = FindRun(elements, oldString);
 
             var tableParentNode = new string[]
             {
@@ -103,7 +142,7 @@ namespace KiteDoc
 
                     // 得到Text的父对象run
                     var r = item[0];
-                    if (r.RunProperties!=null)
+                    if (r.RunProperties != null)
                     {
                         var runs = table.Descendants<Run>();
                         foreach (var tblRun in runs)
@@ -117,7 +156,7 @@ namespace KiteDoc
                 // 不能直接添加，要用Clone构造出来
                 // 否则会报Cannot insert the OpenXmlElement "newChild" because it is part of a tree.异常
                 var copy = table.Clone() as Table;
-                if (copy!=null)
+                if (copy != null)
                 {
                     OpenXmlElement element = item[0].Parent;
 
@@ -146,11 +185,10 @@ namespace KiteDoc
                     count++;
                 }
 
-                
+
             }
             return count;
         }
-
 
         private static List<List<Run>> FindRun(Text[]? elements,string oldString)
         {
@@ -245,11 +283,11 @@ namespace KiteDoc
                         splitRuns.Clear();
                         if (tempRuns.Any())
                         {
-                            waitReplace.Add(tempRuns.Select(x=>x.Value).ToList());
+                            waitReplace.Add(tempRuns.OrderBy(x=>x.Key).Select(x=>x.Value).ToList());
+                            tempRuns.Clear();
                         }
-                        // 因为引用传递的关系，这里不能直接clear
-                        tempRuns = new Dictionary<int, Run>();
 
+                        tempString.Clear();
                         continueFlag = false;
 
 
@@ -261,6 +299,9 @@ namespace KiteDoc
                         // 完全匹配
                         if (tempStringValue.Length == oldString.Length)
                         {
+                            // 添加了本次后完全匹配，则本次的依然在内
+                            splitRuns.Add(i, (Run)elements[i].Parent);
+
                             // 拼接split和temp
                             var runs = tempRuns.Concat(splitRuns).OrderBy(x => x.Key).Select(x => x.Value).ToList();
                             // 添加到待替换列表中
@@ -271,7 +312,7 @@ namespace KiteDoc
                             continueFlag = false;
                         }
                         // 尾部重叠
-                        else if (index + oldString.Length > thisTextString.Length)
+                        else if (index + oldString.Length > tempStringValue.Length)
                         {
                             // 拼接对应的文本放入缓存中
                             continueFlag = true;
@@ -281,13 +322,29 @@ namespace KiteDoc
                         // 内包含
                         else
                         {
-                            var innerIndex = thisTextString[(thisTextString.Length - oldString.Length)..].PartContains(oldString);
+                            var endTempStringValue = tempStringValue[(tempStringValue.Length - oldString.Length)..];
+                            var innerIndex = endTempStringValue.PartContains(oldString);
                             // 内包含+尾部重叠
                             if (innerIndex != -1)
                             {
-                                continueFlag = true;
+                                /*
+                                 * 考虑和前面的文本构成一个关键字，同时还有可能是后一个关键字的起点，并且也许中间还夹杂着一个完整的关键字
+                                 * 重点是不知道是不是后一个关键字的起点，如果是，则要将后续的添加到本次中，如果不是，这些也要提交
+                                 */
+
                                 // 要替换的Run添加进去，因为是内包含，所以一定是要替换的
-                                tempRuns.Add(i, (Run)elements[i].Parent);
+                                splitRuns.Add(i, (Run)elements[i].Parent);
+
+                                // 考虑有可能是后一个尾部的情况，前面的肯定是可以提交了，因此把前面的放在tempRuns这个确定要提交的字典中
+                                // 然后将比对文件截断，仅留后面的部分去匹配，如果匹配上了就继续
+                                tempRuns.Concat(splitRuns);
+                                splitRuns.Clear();
+                                tempString.Clear();
+                                tempString.Append(endTempStringValue);
+                                
+
+                                continueFlag = true;
+
                             }
                             // 单纯的内包含
                             else
@@ -306,82 +363,47 @@ namespace KiteDoc
                     }
                 }
 
-
-
-
-
-                //tempString.Append(elements[i].Text);
-                //// 获取当前Text对象的父对象Run
-                //tempRuns.Add((Run)elements[i].Parent);
-
-                //// todo: 查找时，应该先判断是否存在包含，移除了包含后的字符串，是否与开头匹配
-
-                //// 判断是否是包含关系
-                
-                
-                //var indexOf = thisTextString.IndexOf(oldString);
-                //// 存在包含关系
-                //if (indexOf!=-1)
-                //{
-                //    thisTextString = thisTextString[(indexOf + oldString.Length)..];
-                //}
-                //else
-                //{
-                //    // 查找是否存在部分匹配的情况
-                //}
-
-
-                //if (!continueFlag && thisTextString.Contains(oldString))
-                //{
-                //    thisTextString.Substring(1);
-                //}
-
-                //// 如果第一次找到开头
-                //if (!continueFlag && oldString.StartsWith(elements[i].Text))
-                //{
-                //    continueFlag = true;
-                //}
-
-                //// 如果添加了之后还是满足开始，说明还可以考虑向后加
-                //else if (continueFlag &&
-                //    oldString.StartsWith(tempString.ToString()) &&
-                //    // 只有所有Run的父元素相同的情况下才可以考虑合并文本信息
-                //    elements[i].Parent.Parent == tempRuns[^1].Parent
-                //    )
-                //{
-                //}
-                //// 追加了之后不满足了，说明只有前面一部分相同，不是完全相同
-                //else if (continueFlag)
-                //{
-                //    // 将继续标识置为False，下次重新匹配
-                //    continueFlag = false;
-
-                //    tempString.Clear();
-                //    tempRuns.Clear();
-                //}
-                //else
-                //{
-                //    tempString.Clear();
-                //    tempRuns.Clear();
-                //}
-
-
-                //// 如果匹配成功了，则添加到待替换列表，同时重置待匹配列表和标记
-                //if (continueFlag && tempString.ToString().Contains(oldString))
-                //{
-                //    continueFlag = false;
-                //    waitReplace.Add(tempRuns);
-
-                //    // 因为后面会添加到数组中，考虑引用传递的问题，这里重新new一个数组
-                //    tempRuns = new List<Run>();
-                //    // 清空比对字符串
-                //    tempString.Clear();
-                //}
             }
 
             return waitReplace;
         }
 
 
+        private static Text[]? FindAllTextElement(this WordprocessingDocument doc)
+        {
+            var result = doc.MainDocumentPart.Document.Descendants<Text>();
+
+            foreach (var element in doc.MainDocumentPart.FooterParts) {
+                result = result.Concat( element.Footer.Descendants<Text>()); 
+            }
+
+            foreach (var element in doc.MainDocumentPart.HeaderParts)
+            {
+                result = result.Concat(element.Header.Descendants<Text>());
+            }
+
+            return result.ToArray();
+        }
+
+    }
+
+    /// <summary>
+    /// 替换参数组
+    /// </summary>
+    public record BatchReplaceStringToTable
+    {
+        /// <summary>
+        /// 被替换的字符串
+        /// </summary>
+        public string OldString { get; set; } = string.Empty;
+        /// <summary>
+        /// 目标表格
+        /// </summary>
+        public Table Table { get; set; } = null!;
+
+        /// <summary>
+        /// 是否保留原格式
+        /// </summary>
+        public bool SaveFormatting { get; set; } = true;
     }
 }
