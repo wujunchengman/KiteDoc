@@ -41,6 +41,11 @@ namespace KiteDoc.ElementBuilder
         private List<string?> tableHeader = new();
 
         /// <summary>
+        /// 表头水平对齐样式方式
+        /// </summary>
+        private JustificationValues tableHeaderJustificationValue = JustificationValues.Center;
+
+        /// <summary>
         /// 内容数据
         /// </summary>
         private List<List<string?>> tableData = new();
@@ -189,7 +194,7 @@ namespace KiteDoc.ElementBuilder
         /// <param name="tableWidthType"></param>
         /// <param name="width"></param>
         /// <returns></returns>
-        public TableBuilder SetTableCellWidth(TableWidthType tableWidthType, float[] width)
+        public TableBuilder SetTableCellWidth(TableWidthType tableWidthType,float[] width)
         {
             tableCellWidth = new TableCellWidth[1, width.Length];
 
@@ -267,6 +272,17 @@ namespace KiteDoc.ElementBuilder
         public TableBuilder SetTableHeader(List<string?> header)
         {
             tableHeader = header;
+            return this;
+        }
+
+        /// <summary>
+        /// 设置表头水平对齐方式
+        /// </summary>
+        /// <param name="align">水平对齐方式</param>
+        /// <returns></returns>
+        public TableBuilder SetTableHeaderJustification(JustificationValues align = JustificationValues.Center)
+        {
+            tableHeaderJustificationValue = align;
             return this;
         }
 
@@ -377,7 +393,7 @@ namespace KiteDoc.ElementBuilder
 
                     var paragraph = new ParagraphBuilder()
                         .AppendText(tableHeader[i])
-                        .SetJustification(JustificationValues.Center)
+                        .SetJustification(tableHeaderJustificationValue)
                         .Build();
 
 
@@ -431,6 +447,7 @@ namespace KiteDoc.ElementBuilder
                     // 可能指定了单个宽度
                     else
                     {
+                        // todo: 这里有问题，现在是指定了表格宽度就会抛异常
                         throw new ArgumentException("目前仅支持设置表格头部宽度");
                     }
                     // 可能指定了一行宽度
