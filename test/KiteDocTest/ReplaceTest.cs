@@ -2,6 +2,8 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
 using KiteDoc;
+using KiteDoc.ElementBuilder;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Xunit;
@@ -17,6 +19,37 @@ namespace KiteDocTest
         {
             this.output = output;
         }
+
+        [Fact]
+        public void ReplaceTextToParagraphs()
+        {
+            var filename = "替换文本.docx";
+            string testPath = CopyTestFile(filename);
+
+
+
+
+            using (WordprocessingDocument doc = WordprocessingDocument.Open(testPath, true))
+            {
+                var builder = new ParagraphBuilder();
+                builder.AppendText("测试文本");
+
+                var p = builder.Build();
+
+                var ps = new List<Paragraph>();
+
+                for (int i = 0; i < 5; i++)
+                {
+                    ps.Add(p.Clone() as Paragraph);
+                }
+                
+
+                var count = doc.Replace("假装", ps);
+                Assert.Equal(5, count);
+            }
+            //File.Delete(testPath);
+        }
+
 
         [Fact]
         public void ReplaceText()
@@ -106,7 +139,7 @@ namespace KiteDocTest
 
                         // Assume you want columns that are automatically sized.
                         tc.Append(new TableCellProperties(
-                            new TableCellWidth { Type = TableWidthUnitValues.Auto }));
+                            new DocumentFormat.OpenXml.Wordprocessing.TableCellWidth { Type = TableWidthUnitValues.Auto }));
 
                         tr.Append(tc);
                     }

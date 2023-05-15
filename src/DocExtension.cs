@@ -19,6 +19,54 @@ namespace KiteDoc
     public static class DocExtension
     {
         /// <summary>
+        /// 替换Word中的字符串为段落列表
+        /// </summary>
+        /// <param name="doc">Word文档对象</param>
+        /// <param name="oldString">被替换的字符串</param>
+        /// <param name="paragraphs">段落列表</param>
+        /// <returns></returns>
+        public static int Replace(this WordprocessingDocument doc,string oldString,List<Paragraph> paragraphs)
+        {
+            var elements = doc.FindAllTextElement();
+            var waitReplace = FindRun(elements, oldString);
+            var count = 0;
+            foreach (var item in waitReplace)
+            {
+                var pFlag = true;
+                var el = item.First().Parent;
+                while (el is not Paragraph)
+                {
+                    el = el.Parent;
+                    if (el is Body)
+                    {
+                        pFlag = false;
+                        break;
+                    }
+                }
+
+                if (pFlag)
+                {
+                    foreach (var paragraph in paragraphs)
+                    {
+                        el.InsertBeforeSelf<Paragraph>(paragraph.Clone() as Paragraph);
+                    }
+
+                    el.Remove();
+
+                    count++;
+                }
+                else
+                {
+                    continue;
+                }
+
+            }
+
+            return count;
+        }
+
+
+        /// <summary>
         /// 替换Word中的字符串
         /// </summary>
         /// <param name="doc">Word文档对象</param>
@@ -369,20 +417,27 @@ namespace KiteDoc
         }
 
 
-        private static Text[]? FindAllTextElement(this WordprocessingDocument doc)
+        private static Text[] FindAllTextElement(this WordprocessingDocument doc)
         {
-            var result = doc.MainDocumentPart.Document.Descendants<Text>();
-
-            foreach (var element in doc.MainDocumentPart.FooterParts) {
-                result = result.Concat( element.Footer.Descendants<Text>()); 
-            }
-
-            foreach (var element in doc.MainDocumentPart.HeaderParts)
+            if (doc.MainDocumentPart!=null)
             {
-                result = result.Concat(element.Header.Descendants<Text>());
-            }
+                var result = doc.MainDocumentPart.Document.Descendants<Text>();
 
-            return result.ToArray();
+                foreach (var element in doc.MainDocumentPart.FooterParts)
+                {
+                    result = result.Concat(element.Footer.Descendants<Text>());
+                }
+
+                foreach (var element in doc.MainDocumentPart.HeaderParts)
+                {
+                    result = result.Concat(element.Header.Descendants<Text>());
+                }
+
+                return result.ToArray();
+            }
+            
+            throw new ArgumentNullException(nameof(doc.MainDocumentPart));
+            
         }
 
     }
