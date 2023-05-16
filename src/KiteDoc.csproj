@@ -4,7 +4,7 @@
     <TargetFramework>net6.0</TargetFramework>
     <SignAssembly>false</SignAssembly>
 	  <Nullable>enable</Nullable>
-    <Version>0.1.9</Version>
+    <Version>0.2.0</Version>
     <Company>吴俊城</Company>
     <Product>吴俊城</Product>
     <Description>一组使用OpenXML操作Word文档的快捷API</Description>
@@ -14,7 +14,7 @@
     <RepositoryUrl>https://github.com/wujunchengman/KiteDoc</RepositoryUrl>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
-    <PackageReleaseNotes>添加根据文本替换文本的API replaceText</PackageReleaseNotes>
+    <PackageReleaseNotes>增加通过字符串替换段落列表API</PackageReleaseNotes>
 	  <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 

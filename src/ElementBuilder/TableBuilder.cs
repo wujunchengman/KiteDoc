@@ -444,13 +444,29 @@ namespace KiteDoc.ElementBuilder
                             }
                         }
                     }
+                    // 可能指定了一行宽度
+                    else if (tableCellWidth.GetLength(0) == 1 && tableCellWidth.GetLength(2) == colCount)
+                    {
+                        // 重设表格宽度大小
+                        var newTableCellWidth = new TableCellWidth[rowsCount, colCount];
+                        for (int i = 0; i < rowsCount; i++)
+                        {
+                            for (int j = 0; j < colCount; j++)
+                            {
+                                newTableCellWidth[i, j] = tableCellWidth[0, j];
+                            }
+                        }
+
+                        tableCellWidth = newTableCellWidth;
+
+                    }
                     // 可能指定了单个宽度
                     else
                     {
                         // todo: 这里有问题，现在是指定了表格宽度就会抛异常
-                        throw new ArgumentException("目前仅支持设置表格头部宽度");
+                        throw new ArgumentException("暂未支持的表格宽度设置方案");
                     }
-                    // 可能指定了一行宽度
+                    
 
                     // 可能指定了详细宽度
                 }
