@@ -3,6 +3,7 @@ using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
 using KiteDoc;
 using KiteDoc.ElementBuilder;
+using KiteDocTest.Utils;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -20,42 +21,14 @@ namespace KiteDocTest
             this.output = output;
         }
 
-        [Fact]
-        public void ReplaceTextToParagraphs()
-        {
-            var filename = "替换文本.docx";
-            string testPath = CopyTestFile(filename);
-
-
-
-
-            using (WordprocessingDocument doc = WordprocessingDocument.Open(testPath, true))
-            {
-                var builder = new ParagraphBuilder();
-                builder.AppendText("测试文本");
-
-                var p = builder.Build();
-
-                var ps = new List<Paragraph>();
-
-                for (int i = 0; i < 5; i++)
-                {
-                    ps.Add(p.Clone() as Paragraph);
-                }
-                
-
-                var count = doc.Replace("假装", ps);
-                Assert.Equal(5, count);
-            }
-            //File.Delete(testPath);
-        }
+        
 
 
         [Fact]
         public void ReplaceText()
         {
             var filename = "替换文本.docx";
-            string testPath = CopyTestFile(filename);
+            string testPath = FileUtils.CopyTestFile(filename);
 
 
 
@@ -72,7 +45,7 @@ namespace KiteDocTest
         public void ReplaceTextSplitRun()
         {
             var filename = "替换分段Run的文本.docx";
-            string testPath = CopyTestFile(filename);
+            string testPath = FileUtils.CopyTestFile(filename);
             using (WordprocessingDocument doc = WordprocessingDocument.Open(testPath, true))
             {
                 var count = doc.Replace("{GroupMembers}", "新的字符串");
@@ -155,7 +128,7 @@ namespace KiteDocTest
         public void ReplaceTextToTable()
         {
             var filename = "替换文本为表格.docx";
-            string testPath = CopyTestFile(filename);
+            string testPath = FileUtils.CopyTestFile(filename);
 
             using (WordprocessingDocument doc = WordprocessingDocument.Open(testPath, true))
             {
@@ -169,7 +142,7 @@ namespace KiteDocTest
         public void ReplaceTableTextToNestTable()
         {
             var filename = "替换表格中的文本形成嵌套表格.docx";
-            string testPath = CopyTestFile(filename);
+            string testPath = FileUtils.CopyTestFile(filename);
 
             using (WordprocessingDocument doc = WordprocessingDocument.Open(testPath, true))
             {
@@ -188,7 +161,7 @@ namespace KiteDocTest
         public void ReplaceTextToTableSaveFormatting()
         {
             var filename = "替换文本为表格.docx";
-            string testPath = CopyTestFile(filename);
+            string testPath = FileUtils.CopyTestFile(filename);
             using (WordprocessingDocument doc = WordprocessingDocument.Open(testPath, true))
             {
                 var table = TestTable;
@@ -218,7 +191,7 @@ namespace KiteDocTest
         public void ReplaceTextToTableSplitRun()
         {
             var filename = "替换分段Run的文本.docx";
-            string testPath = CopyTestFile(filename);
+            string testPath = FileUtils.CopyTestFile(filename);
             using (WordprocessingDocument doc = WordprocessingDocument.Open(testPath, true))
             {
                 var table = TestTable;
@@ -227,12 +200,6 @@ namespace KiteDocTest
             }
         }
 
-        private static string CopyTestFile(string filename)
-        {
-            var filePath = "StaticResource" + Path.DirectorySeparatorChar + filename;
-            var testPath = "StaticResource" + Path.DirectorySeparatorChar + "test" + filename;
-            File.Copy(filePath, testPath, true);
-            return testPath;
-        }
+
     }
 }

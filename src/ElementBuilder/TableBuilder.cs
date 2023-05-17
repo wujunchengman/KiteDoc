@@ -445,7 +445,7 @@ namespace KiteDoc.ElementBuilder
                         }
                     }
                     // 可能指定了一行宽度
-                    else if (tableCellWidth.GetLength(0) == 1 && tableCellWidth.GetLength(2) == colCount)
+                    else if (tableCellWidth.GetLength(0) == 1 && tableCellWidth.GetLength(1) == colCount)
                     {
                         // 重设表格宽度大小
                         var newTableCellWidth = new TableCellWidth[rowsCount, colCount];
