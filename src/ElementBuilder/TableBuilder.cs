@@ -540,14 +540,14 @@ namespace KiteDoc.ElementBuilder
                                     if (isSerialNumber)
                                     {
                                         paragraph = new ParagraphBuilder()
-                                           .AppendText((i + 1) + ". " + tableData[i][j])
+                                           .AppendText((k + 1) + ". " + split[k])
                                            .SetJustification(justificationValues[i, j])
                                            .Build();
                                     }
                                     else
                                     {
                                         paragraph = new ParagraphBuilder()
-                                           .AppendText(tableData[i][j])
+                                           .AppendText(split[k])
                                            .SetJustification(justificationValues[i, j])
                                            .Build();
                                     }

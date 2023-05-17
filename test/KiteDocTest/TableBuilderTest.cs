@@ -39,5 +39,33 @@ namespace KiteDocTest
 
             }
         }
+
+        [Fact]
+        public void DataSplitParagraphTest()
+        {
+            using (WordprocessingDocument doc = WordprocessingDocument.Create(testPath, DocumentFormat.OpenXml.WordprocessingDocumentType.Document, true))
+            {
+
+                // Add a main document part. 
+                MainDocumentPart mainPart = doc.AddMainDocumentPart();
+
+                // Create the document structure and add some text.
+                mainPart.Document = new Document();
+                Body body = mainPart.Document.AppendChild(new Body());
+
+                var table = new TableBuilder();
+                var data = new List<List<string?>>()
+                {
+                    new List<string?>{"AAAAAAAAAAAAAAVAAAAAA","BBBBBBBBBBVBBBBBBBB"}
+                };
+                table
+                    .SetDataSplitParagraph("V",false)
+                    .SetTableData(data).SetHorizationNullMerge().SetBorder().SetJustification();
+
+                body.AppendChild(table.Build());
+
+
+            }
+        }
     }
 }
