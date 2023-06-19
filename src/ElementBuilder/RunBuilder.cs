@@ -94,6 +94,17 @@ namespace KiteDoc.ElementBuilder
             return this;
         }
 
+        public RunBuilder ClearText()
+        {
+            var t = run.Descendants<Text>();
+            foreach (var item in t)
+            {
+                item.Remove();
+            }
+
+            return this;
+        }
+
         /// <summary>
         /// 构建Run对象
         /// </summary>
@@ -102,7 +113,7 @@ namespace KiteDoc.ElementBuilder
         {
             run.RunProperties =runProperties;
 
-            return run;
+            return (Run)run.Clone();
         }
     }
 }
