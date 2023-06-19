@@ -51,6 +51,11 @@ namespace KiteDoc.ElementBuilder
         private List<List<string?>> tableData = new();
 
         /// <summary>
+        /// 表格字体大小
+        /// </summary>
+        private float? tableDataFontSize = null;
+
+        /// <summary>
         /// 单元格内段落对齐方式
         /// </summary>
         private JustificationValues[,] justificationValues = new JustificationValues[0, 0];
@@ -314,6 +319,12 @@ namespace KiteDoc.ElementBuilder
             return this;
         }
 
+        public TableBuilder SetTableDataFontSize(float fontSize)
+        {
+            tableDataFontSize = fontSize;
+            return this;
+        }
+
         /// <summary>
         /// 设置表格内文字段落换行
         /// </summary>
@@ -367,9 +378,6 @@ namespace KiteDoc.ElementBuilder
 
             // 样式属性必须在子元素的第一个
             table.AppendChild(tableProperties);
-
-
-
 
             // 如果没有指定表头宽度则全部指定为自动
             if (tableHeaderCellWidth.Length == 0)
@@ -540,14 +548,14 @@ namespace KiteDoc.ElementBuilder
                                     if (isSerialNumber)
                                     {
                                         paragraph = new ParagraphBuilder()
-                                           .AppendText((k + 1) + ". " + split[k])
+                                           .AppendText((k + 1) + ". " + split[k],fontSize:tableDataFontSize)
                                            .SetJustification(justificationValues[i, j])
                                            .Build();
                                     }
                                     else
                                     {
                                         paragraph = new ParagraphBuilder()
-                                           .AppendText(split[k])
+                                           .AppendText(split[k],fontSize: tableDataFontSize)
                                            .SetJustification(justificationValues[i, j])
                                            .Build();
                                     }
@@ -601,7 +609,7 @@ namespace KiteDoc.ElementBuilder
                                 .Build();
 
                             var paragraph = new ParagraphBuilder()
-                                .AppendText(tableData[i][j])
+                                .AppendText(tableData[i][j], fontSize: tableDataFontSize)
                                 .SetJustification(justificationValues[i, j])
                                 .Build();
 
