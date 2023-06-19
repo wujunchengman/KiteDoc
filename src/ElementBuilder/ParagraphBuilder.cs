@@ -13,10 +13,6 @@ namespace KiteDoc.ElementBuilder
     /// </summary>
     public class ParagraphBuilder
     {
-        /// <summary>
-        /// 是否已经构建过了
-        /// </summary>
-        private bool buildFlag = false;
 
         /// <summary>
         /// 段落对象
@@ -27,6 +23,15 @@ namespace KiteDoc.ElementBuilder
         /// 段落样式
         /// </summary>
         private ParagraphProperties paragraphProperties = new ParagraphProperties();
+
+        public ParagraphBuilder SetParagraphStyleId(string paragraphStyleId)
+        {
+            paragraphProperties.ParagraphStyleId = new ParagraphStyleId()
+            {
+                Val = paragraphStyleId
+            };
+            return this;
+        }
 
         /// <summary>
         /// 设置首行缩进
@@ -106,23 +111,28 @@ namespace KiteDoc.ElementBuilder
         }
 
         /// <summary>
+        /// 清空包含的Run，保留样式设置
+        /// </summary>
+        /// <returns></returns>
+        public ParagraphBuilder ClearRuns()
+        {
+            var runs = paragraph.Descendants<Run>();
+            foreach (var item in runs)
+            {
+                item.Remove();
+            }
+            return this;
+        }
+
+        /// <summary>
         /// 构造paragraph对象
         /// </summary>
         /// <returns></returns>
         public Paragraph Build()
         {
-            if (!buildFlag)
-            {
-                // 应用样式
-                paragraph.ParagraphProperties = paragraphProperties;
-                return paragraph;
-            }
-            else
-            {
-                throw new Exception("已经构造过对应对象了，如需获得重复对象请使用深克隆");
-            }
-
-
+            // 应用样式
+            paragraph.ParagraphProperties = paragraphProperties;
+            return (Paragraph)paragraph.Clone();
         }
     }
 }
