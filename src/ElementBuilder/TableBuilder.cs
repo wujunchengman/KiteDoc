@@ -526,7 +526,7 @@ namespace KiteDoc.ElementBuilder
                 }
 
                 // 如果制定了分割字符串就对内容进行分割判断
-                if (splitString != null)
+                if (false)
                 {
                     for (int i = 0; i < tableData.Count; i++)
                     {
@@ -608,14 +608,60 @@ namespace KiteDoc.ElementBuilder
                                 .SetTableCellWidth(tableCellWidth[i, j])
                                 .Build();
 
-                            var paragraph = new ParagraphBuilder()
-                                .AppendText(tableData[i][j], fontSize: tableDataFontSize)
-                                .SetJustification(justificationValues[i, j])
-                                .Build();
+                            if (splitString!=null)
+                            {
+                                var split = tableData[i][j]?.Split(splitString);
+
+                                if (split != null)
+                                {
+                                    for (int k = 0; k < split.Length; k++)
+                                    {
+                                        Paragraph paragraph;
+                                        if (isSerialNumber)
+                                        {
+                                            paragraph = new ParagraphBuilder()
+                                                .AppendText((k + 1) + ". " + split[k],fontSize:tableDataFontSize)
+                                                .SetJustification(justificationValues[i, j])
+                                                .Build();
+                                        }
+                                        else
+                                        {
+                                            paragraph = new ParagraphBuilder()
+                                                .AppendText(split[k],fontSize: tableDataFontSize)
+                                                .SetJustification(justificationValues[i, j])
+                                                .Build();
+                                        }
+                                        // 将段落对象添加到单元格中
+                                        tableCell.AppendChild(paragraph);
+                                    }
+                                }
+                                else
+                                {
+                                    // 当当前位置是null时，TableCell中也要放一个空的Paragraph，以符合文档规范
+                                    
+                                    var paragraph = new ParagraphBuilder()
+                                        .AppendText(tableData[i][j], fontSize: tableDataFontSize)
+                                        .SetJustification(justificationValues[i, j])
+                                        .Build();
+                                    
+                                    // 将段落对象添加到单元格中
+                                    tableCell.AppendChild(paragraph);
+                                }
+                                
+
+                            }
+                            else
+                            {
+                                var paragraph = new ParagraphBuilder()
+                                    .AppendText(tableData[i][j], fontSize: tableDataFontSize)
+                                    .SetJustification(justificationValues[i, j])
+                                    .Build();
 
 
-                            // 将段落对象添加到单元格中
-                            tableCell.AppendChild(paragraph);
+                                // 将段落对象添加到单元格中
+                                tableCell.AppendChild(paragraph);
+                            }
+                            
                             // 将单元格添加到行中
                             tableRow.AppendChild(tableCell);
                         }
