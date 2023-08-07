@@ -182,5 +182,43 @@ namespace KiteDocTest
 
             }
         }
+
+        [Fact]
+        public void DataFontSizeTest()
+        {
+            using (WordprocessingDocument doc = WordprocessingDocument.Create(testPath, DocumentFormat.OpenXml.WordprocessingDocumentType.Document, true))
+            {
+
+                // Add a main document part. 
+                MainDocumentPart mainPart = doc.AddMainDocumentPart();
+
+                // Create the document structure and add some text.
+                mainPart.Document = new Document();
+                Body body = mainPart.Document.AppendChild(new Body());
+
+                var table = new TableBuilder();
+                var data = new List<List<string?>>()
+                {
+                    new List<string?>{"AAA","AAAA","AAAAAAA"},
+                    new List<string?>{"AAA","AAAA","AAAAAAA"},
+                };
+
+                var width = new float[] { 33.3f, 33.3f, 33.4f };
+
+                table
+                    .SetTableHeader(new List<string> { "AAAA", "BBBBBB","CCCCCC"})
+                    .SetTableData(data)
+                    .SetBorder()
+                    .SetJustification()
+                    .SetHorizationNullMerge()
+                    .SetDataSplitParagraph("#$$#", false)
+                    .SetTableHeaderCellWidth(KiteDoc.ElementBuilder.TableWidthType.Percent, width)
+                    .SetTableDataFontSize(21);
+
+                body.AppendChild(table.Build());
+
+
+            }
+        }
     }
 }
