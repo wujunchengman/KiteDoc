@@ -52,7 +52,12 @@ namespace KiteDoc
             var waitReplace = DocElementUtils.FindRun(elements, oldString);
             foreach (var item in waitReplace)
             {
-                if (item.Count == 1)
+                if (item.Count == 0)
+                {
+                    // 可能会出现这种情况，如果没有对应的Run就直接跳过
+                    continue;
+                }
+                else if (item.Count == 1)
                 {
                     var text = item[0].Descendants<Text>().FirstOrDefault();
                     text.Text = text.Text.Replace(oldString, newString);

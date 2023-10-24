@@ -50,6 +50,7 @@ namespace KiteDoc.ElementBuilder
         /// </summary>
         private List<List<string?>> tableData = new();
 
+
         /// <summary>
         /// 表格字体大小
         /// </summary>
@@ -521,7 +522,7 @@ namespace KiteDoc.ElementBuilder
                     }
                     else
                     {
-                        throw new ArgumentException("暂不支持详细配置水平对齐方式");
+                        // 已经是详细配置的不再处理
                     }
                 }
 
