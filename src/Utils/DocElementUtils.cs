@@ -190,6 +190,8 @@ namespace KiteDoc.Utils
                             // 单纯的内包含
                             else
                             {
+                                splitRuns.Add(i, (Run)elements[i].Parent);
+
                                 // 拼接split和temp
                                 var runs = tempRuns.Concat(splitRuns).OrderBy(x => x.Key).Select(x => x.Value).ToList();
                                 // 添加到待替换列表中
