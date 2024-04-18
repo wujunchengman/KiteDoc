@@ -30,7 +30,6 @@ namespace KiteDoc.Utils
             }
 
             throw new ArgumentNullException(nameof(doc.MainDocumentPart));
-
         }
 
         public static List<List<Run>> FindRun(Text[]? elements, string oldString)
@@ -43,7 +42,6 @@ namespace KiteDoc.Utils
 
             for (int i = 0; i < elements.Length; i++)
             {
-
                 // 如果是从头开始的，而不是因为部分匹配继续的
                 if (!continueFlag)
                 {
@@ -56,13 +54,12 @@ namespace KiteDoc.Utils
                      * 如果有包含有又有部分匹配，则将当前run和后面的run一起添加
                      */
 
-                    // 一定有匹配，不确定是不是部分匹配
+                    // 一定有匹配，不确定是不是部分匹配(一旦有字符不匹配就会设为-1，所以不为-1时有可能是长度不够，也有可能是完全匹配)
                     var index = thisTextString.PartContains(oldString);
                     if (index != -1)
                     {
-
                         // 完全匹配
-                        if (thisTextString.Length == oldString.Length)
+                        if (thisTextString == oldString)
                         {
                             // 添加到待替换列表中
                             waitReplace.Add(new List<Run> { (Run)elements[i].Parent });
@@ -104,7 +101,6 @@ namespace KiteDoc.Utils
                                 waitReplace.Add(new List<Run> { (Run)elements[i].Parent });
                             }
                         }
-
                     }
                 }
                 // 从上一次部分匹配添加过来的
@@ -121,7 +117,6 @@ namespace KiteDoc.Utils
                     {
                         // 不符合的情况
 
-
                         // 当找到不符合时就提交所有需要提交的
                         splitRuns.Clear();
                         if (tempRuns.Any())
@@ -132,8 +127,6 @@ namespace KiteDoc.Utils
 
                         tempString.Clear();
                         continueFlag = false;
-
-
                     }
                     else
                     {
@@ -185,9 +178,7 @@ namespace KiteDoc.Utils
                                 tempString.Clear();
                                 tempString.Append(endTempStringValue);
 
-
                                 continueFlag = true;
-
                             }
                             // 单纯的内包含
                             else
@@ -202,10 +193,8 @@ namespace KiteDoc.Utils
                                 continueFlag = false;
                             }
                         }
-
                     }
                 }
-
             }
 
             return waitReplace;
