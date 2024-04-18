@@ -32,7 +32,7 @@ namespace KiteDoc.Utils
             throw new ArgumentNullException(nameof(doc.MainDocumentPart));
         }
 
-        public static List<List<Run>> FindRun(Text[]? elements, string oldString)
+        public static List<List<Run>> FindRun(Text[]? elements, string matchString)
         {
             var waitReplace = new List<List<Run>>();
             var continueFlag = false;
@@ -55,17 +55,17 @@ namespace KiteDoc.Utils
                      */
 
                     // 一定有匹配，不确定是不是部分匹配(一旦有字符不匹配就会设为-1，所以不为-1时有可能是长度不够，也有可能是完全匹配)
-                    var index = thisTextString.PartContains(oldString);
+                    var index = thisTextString.PartContains(matchString);
                     if (index != -1)
                     {
                         // 完全匹配
-                        if (thisTextString == oldString)
+                        if (thisTextString == matchString)
                         {
                             // 添加到待替换列表中
                             waitReplace.Add(new List<Run> { (Run)elements[i].Parent });
                         }
                         // 尾部重叠
-                        else if (index + oldString.Length > thisTextString.Length)
+                        else if (index + matchString.Length > thisTextString.Length)
                         {
                             // 拼接对应的文本放入缓存中
                             tempString.Append(thisTextString);
@@ -76,7 +76,7 @@ namespace KiteDoc.Utils
                         // 内包含
                         else
                         {
-                            var innerIndex = thisTextString[(thisTextString.Length - oldString.Length)..].PartContains(oldString);
+                            var innerIndex = thisTextString[(thisTextString.Length - matchString.Length)..].PartContains(matchString);
 
                             /*
                              * 取值可能
@@ -111,7 +111,7 @@ namespace KiteDoc.Utils
                     tempString.Append(thisTextString);
                     var tempStringValue = tempString.ToString();
 
-                    var index = tempStringValue.PartContains(oldString);
+                    var index = tempStringValue.PartContains(matchString);
                     // 判断是否符合
                     if (index == -1)
                     {
@@ -133,7 +133,7 @@ namespace KiteDoc.Utils
                         // 符合的情况
 
                         // 完全匹配
-                        if (tempStringValue.Length == oldString.Length)
+                        if (tempStringValue == matchString)
                         {
                             // 添加了本次后完全匹配，则本次的依然在内
                             splitRuns.Add(i, (Run)elements[i].Parent);
@@ -148,7 +148,7 @@ namespace KiteDoc.Utils
                             continueFlag = false;
                         }
                         // 尾部重叠
-                        else if (index + oldString.Length > tempStringValue.Length)
+                        else if (index + matchString.Length > tempStringValue.Length)
                         {
                             // 拼接对应的文本放入缓存中
                             continueFlag = true;
@@ -158,10 +158,17 @@ namespace KiteDoc.Utils
                         // 内包含
                         else
                         {
-                            var endTempStringValue = tempStringValue[(tempStringValue.Length - oldString.Length)..];
-                            var innerIndex = endTempStringValue.PartContains(oldString);
+                            var endTempStringValue = tempStringValue[(tempStringValue.Length - matchString.Length)..];
+                            var innerIndex = endTempStringValue.PartContains(matchString);
+
+                            /*
+                             * innerIndex有三种情况：-1，0，>0
+                             * -1代表拼接后的文本的后段和需要匹配的字符串不一样，结合前面的判断，在字符串的前面或者中间位置有匹配的字符串
+                             * 0很特殊，代表结尾匹配上了，这意味着也是到当前就匹配好了，无需考虑在拼下一个RUN的文本了
+                             * >0代表结尾的文本还有部分匹配，这时候需要接着拼下一个RUN的文本进来
+                             */
                             // 内包含+尾部重叠
-                            if (innerIndex != -1)
+                            if (innerIndex > 0)
                             {
                                 /*
                                  * 考虑和前面的文本构成一个关键字，同时还有可能是后一个关键字的起点，并且也许中间还夹杂着一个完整的关键字

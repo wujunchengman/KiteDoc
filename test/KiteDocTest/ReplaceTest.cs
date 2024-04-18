@@ -39,6 +39,20 @@ namespace KiteDocTest
         }
 
         [Fact]
+        public void ReplaceText_2_Test()
+        {
+            var filename = "保温箱验证方案.docx";
+            string testPath = FileUtils.CopyTestFile(filename, "ReplaceText_2_Test" + filename);
+
+            using (WordprocessingDocument doc = WordprocessingDocument.Open(testPath, true))
+            {
+                var count = doc.Replace("{DescriptionA}", "保温箱");
+                Assert.Equal(2, count);
+            }
+            //File.Delete(testPath);
+        }
+
+        [Fact]
         public void ReplaceTextSplitRun()
         {
             var filename = "替换分段Run的文本.docx";
