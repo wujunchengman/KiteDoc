@@ -1,10 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net6.0;net8.0</TargetFramework>
     <SignAssembly>false</SignAssembly>
 	  <Nullable>enable</Nullable>
-    <Version>0.2.3</Version>
+    <Version>0.3.1</Version>
     <Company>吴俊城</Company>
     <Product>吴俊城</Product>
     <Description>一组使用OpenXML操作Word文档的快捷API</Description>
@@ -14,7 +14,7 @@
     <RepositoryUrl>https://github.com/wujunchengman/KiteDoc</RepositoryUrl>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
-    <PackageReleaseNotes>移除错误的表格对齐方式限制</PackageReleaseNotes>
+    <PackageReleaseNotes>升级openXML3，修复在匹配RUN时因为半匹配但是整体长度和期待文本相同导致的意外的匹配的问题</PackageReleaseNotes>
 	  <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
@@ -23,8 +23,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DocumentFormat.OpenXml" Version="*" />
-    <PackageReference Include="SixLabors.ImageSharp" Version="*" />
+    <PackageReference Include="DocumentFormat.OpenXml" Version="3.*" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="3.*" />
   </ItemGroup>
 
   <ItemGroup>

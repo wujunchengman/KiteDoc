@@ -9,10 +9,10 @@ namespace KiteDocTest.Utils
 {
     public static class FileUtils
     {
-        public static string CopyTestFile(string filename)
+        public static string CopyTestFile(string filename, string? destFilename = null)
         {
             var filePath = "StaticResource" + Path.DirectorySeparatorChar + filename;
-            var testPath = "StaticResource" + Path.DirectorySeparatorChar + "test" + filename;
+            var testPath = "StaticResource" + Path.DirectorySeparatorChar + "test" + destFilename ?? filename;
             File.Copy(filePath, testPath, true);
             return testPath;
         }

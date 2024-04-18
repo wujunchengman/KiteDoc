@@ -3,7 +3,9 @@ using KiteDoc;
 using KiteDocTest.Utils;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
@@ -16,10 +18,7 @@ namespace KiteDocTest
         public void ReplaceNotExistKeyText()
         {
             var filename = "替换文本.docx";
-            string testPath = FileUtils.CopyTestFile(filename);
-
-
-
+            string testPath = FileUtils.CopyTestFile(filename, "ReplaceNotExistKeyText" + filename);
 
             using (WordprocessingDocument doc = WordprocessingDocument.Open(testPath, true))
             {

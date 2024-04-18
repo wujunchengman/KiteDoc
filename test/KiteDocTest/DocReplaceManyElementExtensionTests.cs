@@ -25,10 +25,7 @@ namespace KiteDoc.Tests
         public void ReplaceTextToParagraphs()
         {
             var filename = "替换文本.docx";
-            string testPath = FileUtils.CopyTestFile(filename);
-
-
-
+            string testPath = FileUtils.CopyTestFile(filename, "ReplaceTextToParagraphs" + filename);
 
             using (WordprocessingDocument doc = WordprocessingDocument.Open(testPath, true))
             {
@@ -44,7 +41,6 @@ namespace KiteDoc.Tests
                     ps.Add(p.Clone() as Paragraph);
                 }
 
-
                 var count = doc.Replace("假装", ps);
                 Assert.Equal(5, count);
             }
@@ -54,50 +50,42 @@ namespace KiteDoc.Tests
         [Fact]
         public void ReplaceStringToTablesTest()
         {
-                var filename = "替换文本为多个表格.docx";
-                string testPath = FileUtils.CopyTestFile(filename);
+            var filename = "替换文本为多个表格.docx";
+            string testPath = FileUtils.CopyTestFile(filename, "ReplaceStringToTablesTest" + filename);
 
-
-
-
-                using (WordprocessingDocument doc = WordprocessingDocument.Open(testPath, true))
-                {
-                    var builder = new TableBuilder();
-                    builder.SetTableData(new List<List<string?>>
+            using (WordprocessingDocument doc = WordprocessingDocument.Open(testPath, true))
+            {
+                var builder = new TableBuilder();
+                builder.SetTableData(new List<List<string?>>
                     {
                         new List<string?>{"AAAA","BBBB","CCCC"},
                         new List<string?>{"AAAA","BBBB","CCCC"},
                         new List<string?>{"AAAA","BBBB","CCCC"},
                         new List<string?>{"AAAA","BBBB","CCCC"},
-                    }).SetTableCellWidth(ElementBuilder.TableWidthType.Percent,new float[] {30,30,40})
-                    .SetBorder()
-                    .SetJustification()
-                    ;
+                    }).SetTableCellWidth(ElementBuilder.TableWidthType.Percent, new float[] { 30, 30, 40 })
+                .SetBorder()
+                .SetJustification()
+                ;
 
-                    var t = builder.Build();
-
-
+                var t = builder.Build();
 
                 var ts = new List<Table>();
 
-                    for (int i = 0; i < 5; i++)
-                    {
-                        ts.Add((Table)t.Clone());
-                    }
-
-
-                    var count = doc.Replace("替换", ts,true);
-                    Assert.Equal(1, count);
+                for (int i = 0; i < 5; i++)
+                {
+                    ts.Add((Table)t.Clone());
                 }
-        }
 
+                var count = doc.Replace("替换", ts, true);
+                Assert.Equal(1, count);
+            }
+        }
 
         [Fact]
         public void ReplaceStringToTablesAndParagraphTest()
         {
             var filename = "替换文本为多个表格.docx";
-            string testPath = FileUtils.CopyTestFile(filename);
-
+            string testPath = FileUtils.CopyTestFile(filename, "ReplaceStringToTablesAndParagraphTest" + filename);
 
             using (WordprocessingDocument doc = WordprocessingDocument.Open(testPath, true))
             {
@@ -119,7 +107,6 @@ namespace KiteDoc.Tests
 
                 var pBuilder = new ParagraphBuilder();
                 pBuilder.AppendText("测试文本");
-
 
                 var p = pBuilder.Build();
 

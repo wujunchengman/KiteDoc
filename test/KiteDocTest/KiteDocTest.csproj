@@ -20,14 +20,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="StaticResource\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\..\src\KiteDoc.csproj" />
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="StaticResource\保温箱验证方案.docx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="StaticResource\替换分段Run的文本.docx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

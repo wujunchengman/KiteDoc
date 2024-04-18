@@ -13,7 +13,6 @@ namespace KiteDoc.ElementBuilder
     /// </summary>
     public class ParagraphBuilder
     {
-
         /// <summary>
         /// 段落对象
         /// </summary>
@@ -58,7 +57,6 @@ namespace KiteDoc.ElementBuilder
                 paragraphProperties.Indentation.FirstLineChars = null;
             }
 
-
             return this;
         }
 
@@ -67,8 +65,13 @@ namespace KiteDoc.ElementBuilder
         /// </summary>
         /// <param name="values">对齐方式</param>
         /// <returns></returns>
-        public ParagraphBuilder SetJustification(JustificationValues values = JustificationValues.Center)
+        public ParagraphBuilder SetJustification(JustificationValues? values = null)
         {
+            if (values == null)
+            {
+                values = JustificationValues.Center;
+            }
+
             paragraphProperties.Justification = new Justification()
             { Val = new EnumValue<JustificationValues>(values) };
             return this;
@@ -94,7 +97,6 @@ namespace KiteDoc.ElementBuilder
                     .Build();
                 paragraph.AddChild(run);
             }
-
 
             return this;
         }

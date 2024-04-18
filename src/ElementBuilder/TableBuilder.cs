@@ -43,13 +43,12 @@ namespace KiteDoc.ElementBuilder
         /// <summary>
         /// 表头水平对齐样式方式
         /// </summary>
-        private JustificationValues tableHeaderJustificationValue = JustificationValues.Center;
+        private JustificationValues? tableHeaderJustificationValue = JustificationValues.Center;
 
         /// <summary>
         /// 内容数据
         /// </summary>
         private List<List<string?>> tableData = new();
-
 
         /// <summary>
         /// 表格字体大小
@@ -60,6 +59,7 @@ namespace KiteDoc.ElementBuilder
         /// 单元格内段落对齐方式
         /// </summary>
         private JustificationValues[,] justificationValues = new JustificationValues[0, 0];
+
         /// <summary>
         /// 单元格内垂直对齐方式
         /// </summary>
@@ -82,8 +82,13 @@ namespace KiteDoc.ElementBuilder
         /// <param name="borderSize">边框大小</param>
         /// <param name="borderType">框线类型</param>
         /// <returns></returns>
-        public TableBuilder SetBorder(TableBorderScope tableborderScope = TableBorderScope.All, float borderSize = 1, BorderValues borderType = BorderValues.Single)
+        public TableBuilder SetBorder(TableBorderScope tableborderScope = TableBorderScope.All, float borderSize = 1, BorderValues? borderType = null)
         {
+            if (borderType == null)
+            {
+                borderType = BorderValues.Single;
+            }
+
             // 将边框线换算为Excel中的值，Excel中2为1榜
             var borderSizeVal = (uint)(borderSize * 2 + 0.5);
 
@@ -95,6 +100,7 @@ namespace KiteDoc.ElementBuilder
                         tableBorders.RemoveAllChildren();
                     }
                     break;
+
                 case TableBorderScope.All:
                     {
                         // 先移除已有的框线设置
@@ -107,39 +113,45 @@ namespace KiteDoc.ElementBuilder
                         tableBorders.RightBorder = new RightBorder { Val = new EnumValue<BorderValues>(borderType), Size = borderSizeVal };
                         tableBorders.InsideHorizontalBorder = new InsideHorizontalBorder { Val = new EnumValue<BorderValues>(borderType), Size = borderSizeVal };
                         tableBorders.InsideVerticalBorder = new InsideVerticalBorder { Val = new EnumValue<BorderValues>(borderType), Size = borderSizeVal };
-
                     }
                     break;
+
                 case TableBorderScope.Left:
                     {
                         tableBorders.LeftBorder = new LeftBorder { Val = new EnumValue<BorderValues>(borderType), Size = borderSizeVal };
                     }
                     break;
+
                 case TableBorderScope.Right:
                     {
                         tableBorders.RightBorder = new RightBorder { Val = new EnumValue<BorderValues>(borderType), Size = borderSizeVal };
                     }
                     break;
+
                 case TableBorderScope.Top:
                     {
                         tableBorders.TopBorder = new TopBorder { Val = new EnumValue<BorderValues>(borderType), Size = borderSizeVal };
                     }
                     break;
+
                 case TableBorderScope.Bottom:
                     {
                         tableBorders.BottomBorder = new BottomBorder { Val = new EnumValue<BorderValues>(borderType), Size = borderSizeVal };
                     }
                     break;
+
                 case TableBorderScope.InsideHorizontal:
                     {
                         tableBorders.InsideHorizontalBorder = new InsideHorizontalBorder { Val = new EnumValue<BorderValues>(borderType), Size = borderSizeVal };
                     }
                     break;
+
                 case TableBorderScope.InsideVertical:
                     {
                         tableBorders.InsideVerticalBorder = new InsideVerticalBorder { Val = new EnumValue<BorderValues>(borderType), Size = borderSizeVal };
                     }
                     break;
+
                 default:
                     break;
             }
@@ -160,6 +172,7 @@ namespace KiteDoc.ElementBuilder
                     // Word中设置百分比的宽度行为是先将百分比保留一位小数，然后乘以五十得到五十分之一百分比值
                     tableWidth = new TableWidth { Type = TableWidthUnitValues.Pct, Width = (Math.Round(width, 1) * 50).ToString() };
                     break;
+
                 case TableWidthType.Cm:
                     // Dxa是二十分之一点，其与厘米的换算需要先将cm转换为像素，然后乘以20，Word使用72dpi显示
 
@@ -168,12 +181,15 @@ namespace KiteDoc.ElementBuilder
                     // Word中的行为是先计算到像素点，然后保留一位小数，再乘以20，得到二十分之一点值
                     tableWidth = new TableWidth { Type = TableWidthUnitValues.Dxa, Width = (Math.Round((width * 72 / 2.54), 1) * 20).ToString() };
                     break;
+
                 case TableWidthType.Nil:
                     tableWidth = new TableWidth { Type = TableWidthUnitValues.Nil };
                     break;
+
                 case TableWidthType.Auto:
                     tableWidth = new TableWidth { Type = TableWidthUnitValues.Auto };
                     break;
+
                 default:
                     break;
             }
@@ -190,9 +206,7 @@ namespace KiteDoc.ElementBuilder
         {
             tableCellWidth = new TableCellWidth[1, 1] { { new TableCellWidth(width, tableWidthType) } };
             return this;
-
         }
-
 
         /// <summary>
         /// 设置表格单元格宽度
@@ -200,7 +214,7 @@ namespace KiteDoc.ElementBuilder
         /// <param name="tableWidthType"></param>
         /// <param name="width"></param>
         /// <returns></returns>
-        public TableBuilder SetTableCellWidth(TableWidthType tableWidthType,float[] width)
+        public TableBuilder SetTableCellWidth(TableWidthType tableWidthType, float[] width)
         {
             tableCellWidth = new TableCellWidth[1, width.Length];
 
@@ -230,7 +244,6 @@ namespace KiteDoc.ElementBuilder
                         tableCellWidth[i, j] = new TableCellWidth(width[i, j], tableWidthType);
                     }
                 }
-
             }
             return this;
         }
@@ -240,9 +253,17 @@ namespace KiteDoc.ElementBuilder
         /// </summary>
         /// <param name="align">水平对齐方式</param>
         /// <returns></returns>
-        public TableBuilder SetJustification(JustificationValues align = JustificationValues.Center)
+        public TableBuilder SetJustification(JustificationValues? align = null)
         {
-            justificationValues = new JustificationValues[1, 1] { { align } };
+            if (align == null)
+            {
+                justificationValues = new JustificationValues[1, 1] { { JustificationValues.Center } };
+            }
+            else
+            {
+                justificationValues = new JustificationValues[1, 1] { { align.Value } };
+            }
+
             return this;
         }
 
@@ -254,8 +275,15 @@ namespace KiteDoc.ElementBuilder
         public TableBuilder SetJustification(JustificationValues[] align)
         {
             justificationValues = new JustificationValues[1, align.Length];
-            // 利用内存复制将一维数组赋值到二维数组
-            Buffer.BlockCopy(align, 0, justificationValues, 0, align.Length * sizeof(JustificationValues));
+
+            // 利用循环将一维数组复制到二维数组
+            for (int i = 0; i < align.Length; i++)
+            {
+                justificationValues[0, i] = align[i];
+            }
+
+            //// 利用内存复制将一维数组赋值到二维数组
+            //Buffer.BlockCopy(align, 0, justificationValues, 0, align.Length * sizeof(JustificationValues));
             return this;
         }
 
@@ -286,8 +314,12 @@ namespace KiteDoc.ElementBuilder
         /// </summary>
         /// <param name="align">水平对齐方式</param>
         /// <returns></returns>
-        public TableBuilder SetTableHeaderJustification(JustificationValues align = JustificationValues.Center)
+        public TableBuilder SetTableHeaderJustification(JustificationValues? align = null)
         {
+            if (align == null)
+            {
+                align = JustificationValues.Center;
+            }
             tableHeaderJustificationValue = align;
             return this;
         }
@@ -339,7 +371,6 @@ namespace KiteDoc.ElementBuilder
             return this;
         }
 
-
         // todo: 设置水平合并
         /// <summary>
         /// 设置水平方向的Null内容合并
@@ -363,8 +394,6 @@ namespace KiteDoc.ElementBuilder
         /// <returns></returns>
         public Table Build()
         {
-
-
             // 添加Table数据时要将对应的行列的数据样式进行匹配
 
             // 添加定义的样式（绑定在Table上的表格样式）
@@ -405,7 +434,6 @@ namespace KiteDoc.ElementBuilder
                         .SetJustification(tableHeaderJustificationValue)
                         .Build();
 
-
                     // 将段落对象添加到单元格中
                     tableCell.AppendChild(paragraph);
                     // 将单元格添加到行中
@@ -415,7 +443,6 @@ namespace KiteDoc.ElementBuilder
                 // 将表头行添加到表格对象中
                 table.AppendChild(tableRow);
             }
-
 
             if (tableData.Count > 0)
             {
@@ -433,7 +460,6 @@ namespace KiteDoc.ElementBuilder
                         // 如果设置了表头宽度
                         if (tableHeaderCellWidth.Length != 0)
                         {
-
                             for (int i = 0; i < rowsCount; i++)
                             {
                                 for (int j = 0; j < colCount; j++)
@@ -467,7 +493,6 @@ namespace KiteDoc.ElementBuilder
                         }
 
                         tableCellWidth = newTableCellWidth;
-
                     }
                     // 可能指定了单个宽度
                     else
@@ -475,7 +500,6 @@ namespace KiteDoc.ElementBuilder
                         // todo: 这里有问题，现在是指定了表格宽度就会抛异常
                         throw new ArgumentException("暂未支持的表格宽度设置方案");
                     }
-                    
 
                     // 可能指定了详细宽度
                 }
@@ -549,26 +573,22 @@ namespace KiteDoc.ElementBuilder
                                     if (isSerialNumber)
                                     {
                                         paragraph = new ParagraphBuilder()
-                                           .AppendText((k + 1) + ". " + split[k],fontSize:tableDataFontSize)
+                                           .AppendText((k + 1) + ". " + split[k], fontSize: tableDataFontSize)
                                            .SetJustification(justificationValues[i, j])
                                            .Build();
                                     }
                                     else
                                     {
                                         paragraph = new ParagraphBuilder()
-                                           .AppendText(split[k],fontSize: tableDataFontSize)
+                                           .AppendText(split[k], fontSize: tableDataFontSize)
                                            .SetJustification(justificationValues[i, j])
                                            .Build();
                                     }
-
-
 
                                     // 将段落对象添加到单元格中
                                     tableCell.AppendChild(paragraph);
                                 }
                             }
-
-
 
                             // 将单元格添加到行中
                             tableRow.AppendChild(tableCell);
@@ -590,12 +610,12 @@ namespace KiteDoc.ElementBuilder
                             if (tableCellMerge == TableCellMergeType.HorizontalNullMerge)
                             {
                                 // 如果是null值，则是继续合并
-                                if (tableData[i][j]==null)
+                                if (tableData[i][j] == null)
                                 {
                                     tableCellBuilder.SetTableCellMerge(TableCellMerge.HorizontalContinue);
                                 }
                                 // 如果下一单元格没有数据，则开启合并单元格
-                                else if ((j + 1) < tableData[i].Count && tableData[i][j + 1]==null)
+                                else if ((j + 1) < tableData[i].Count && tableData[i][j + 1] == null)
                                 {
                                     tableCellBuilder.SetTableCellMerge(TableCellMerge.HorizontalStart);
                                 }
@@ -609,7 +629,7 @@ namespace KiteDoc.ElementBuilder
                                 .SetTableCellWidth(tableCellWidth[i, j])
                                 .Build();
 
-                            if (splitString!=null)
+                            if (splitString != null)
                             {
                                 var split = tableData[i][j]?.Split(splitString);
 
@@ -621,14 +641,14 @@ namespace KiteDoc.ElementBuilder
                                         if (isSerialNumber)
                                         {
                                             paragraph = new ParagraphBuilder()
-                                                .AppendText((k + 1) + ". " + split[k],fontSize:tableDataFontSize)
+                                                .AppendText((k + 1) + ". " + split[k], fontSize: tableDataFontSize)
                                                 .SetJustification(justificationValues[i, j])
                                                 .Build();
                                         }
                                         else
                                         {
                                             paragraph = new ParagraphBuilder()
-                                                .AppendText(split[k],fontSize: tableDataFontSize)
+                                                .AppendText(split[k], fontSize: tableDataFontSize)
                                                 .SetJustification(justificationValues[i, j])
                                                 .Build();
                                         }
@@ -639,17 +659,15 @@ namespace KiteDoc.ElementBuilder
                                 else
                                 {
                                     // 当当前位置是null时，TableCell中也要放一个空的Paragraph，以符合文档规范
-                                    
+
                                     var paragraph = new ParagraphBuilder()
                                         .AppendText(tableData[i][j], fontSize: tableDataFontSize)
                                         .SetJustification(justificationValues[i, j])
                                         .Build();
-                                    
+
                                     // 将段落对象添加到单元格中
                                     tableCell.AppendChild(paragraph);
                                 }
-                                
-
                             }
                             else
                             {
@@ -658,11 +676,10 @@ namespace KiteDoc.ElementBuilder
                                     .SetJustification(justificationValues[i, j])
                                     .Build();
 
-
                                 // 将段落对象添加到单元格中
                                 tableCell.AppendChild(paragraph);
                             }
-                            
+
                             // 将单元格添加到行中
                             tableRow.AppendChild(tableCell);
                         }
@@ -670,17 +687,10 @@ namespace KiteDoc.ElementBuilder
                         table.AppendChild(tableRow);
                     }
                 }
-
-
-
             }
 
-
             return table;
-
-
         }
-
     }
 
     /// <summary>
@@ -699,11 +709,11 @@ namespace KiteDoc.ElementBuilder
             TableWidthType = tableWidthType;
         }
 
-
         /// <summary>
         /// 表格单元格宽度
         /// </summary>
         public float Width { get; set; }
+
         /// <summary>
         /// 表格单元格宽度计算方式
         /// </summary>
@@ -719,16 +729,17 @@ namespace KiteDoc.ElementBuilder
         /// 左对齐
         /// </summary>
         Left,
+
         /// <summary>
         /// 居中对齐
         /// </summary>
         Center,
+
         /// <summary>
         /// 右对齐
         /// </summary>
         Right
     }
-
 
     /// <summary>
     /// 表格宽度类型
@@ -739,19 +750,21 @@ namespace KiteDoc.ElementBuilder
         /// 百分比
         /// </summary>
         Percent,
+
         /// <summary>
         /// 厘米
         /// </summary>
         Cm,
+
         /// <summary>
         /// 无宽度
         /// </summary>
         Nil,
+
         /// <summary>
         /// 自动决定宽度
         /// </summary>
         Auto,
-
     }
 
     /// <summary>
@@ -763,35 +776,41 @@ namespace KiteDoc.ElementBuilder
         /// 无边框
         /// </summary>
         None,
+
         /// <summary>
         /// 所有框线
         /// </summary>
         All,
+
         /// <summary>
         /// 左框线
         /// </summary>
         Left,
+
         /// <summary>
         /// 右框线
         /// </summary>
         Right,
+
         /// <summary>
         /// 上框线
         /// </summary>
         Top,
+
         /// <summary>
         /// 下框线
         /// </summary>
         Bottom,
+
         /// <summary>
         /// 内部水平框线
         /// </summary>
         InsideHorizontal,
+
         /// <summary>
         /// 内部垂直框线
         /// </summary>
         InsideVertical
-
     }
 
     /// <summary>
@@ -803,11 +822,10 @@ namespace KiteDoc.ElementBuilder
         /// 不合并
         /// </summary>
         None,
+
         /// <summary>
         /// 水平Null合并
         /// </summary>
         HorizontalNullMerge,
-
     }
-
 }

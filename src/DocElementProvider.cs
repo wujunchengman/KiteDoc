@@ -46,7 +46,6 @@ namespace KiteDoc
             return bookmarkEnd;
         }
 
-
         /// <summary>
         /// 返回一个Run对象
         /// </summary>
@@ -96,10 +95,12 @@ namespace KiteDoc
                     paragraphProperties.Justification = new Justification()
                     { Val = new EnumValue<JustificationValues>(JustificationValues.Left) };
                     break;
+
                 case HorizontalAlign.Center:
                     paragraphProperties.Justification = new Justification()
                     { Val = new EnumValue<JustificationValues>(JustificationValues.Center) };
                     break;
+
                 case HorizontalAlign.Right:
                     paragraphProperties.Justification = new Justification()
                     { Val = new EnumValue<JustificationValues>(JustificationValues.Right) };
@@ -143,40 +144,46 @@ namespace KiteDoc
                         new TableCellVerticalAlignment()
                         { Val = new EnumValue<TableVerticalAlignmentValues>(TableVerticalAlignmentValues.Center) });
                     break;
+
                 case VerticalAlign.Top:
                     tableCellProperties.AppendChild(new TableCellVerticalAlignment()
                     { Val = new EnumValue<TableVerticalAlignmentValues>(TableVerticalAlignmentValues.Top) });
                     break;
+
                 case VerticalAlign.Bottom:
                     tableCellProperties.AppendChild(new TableCellVerticalAlignment()
                     { Val = new EnumValue<TableVerticalAlignmentValues>(TableVerticalAlignmentValues.Bottom) });
                     break;
             }
 
-
             // 添加合并单元格标记
             switch (cellMerge)
             {
                 case TableCellMergeEnum.Normal:
                     break;
+
                 case TableCellMergeEnum.HorizontalStart:
                     //Console.WriteLine("start");
                     tableCellProperties.AppendChild(new HorizontalMerge()
                     { Val = new EnumValue<MergedCellValues>(MergedCellValues.Restart) });
                     break;
+
                 case TableCellMergeEnum.HorizontalContinue:
                     //Console.WriteLine("continue");
                     tableCellProperties.AppendChild(new HorizontalMerge()
                     { Val = new EnumValue<MergedCellValues>(MergedCellValues.Continue) });
                     break;
+
                 case TableCellMergeEnum.VerticalStart:
                     tableCellProperties.AppendChild(new VerticalMerge()
                     { Val = new EnumValue<MergedCellValues>(MergedCellValues.Restart) });
                     break;
+
                 case TableCellMergeEnum.VerticalContinue:
                     tableCellProperties.AppendChild(new VerticalMerge()
                     { Val = new EnumValue<MergedCellValues>(MergedCellValues.Continue) });
                     break;
+
                 case TableCellMergeEnum.HorizontalAndVerticalStart:
                     tableCellProperties.AppendChild(new VerticalMerge()
                     { Val = new EnumValue<MergedCellValues>(MergedCellValues.Restart) });
@@ -285,7 +292,6 @@ namespace KiteDoc
                         tableCell = GetTableCellObject(widthList[i],
                             cellMerge: TableCellMergeEnum.HorizontalContinue);
                     }
-
                     else if ((i + 1) < rowLength && string.IsNullOrEmpty(rowList[i + 1]))
                     {
                         //Console.WriteLine(rowList[i]);
@@ -333,7 +339,6 @@ namespace KiteDoc
                         }
                     }
 
-
                     //将单元格写入行
                     tableRow.AppendChild(tableCell);
                 }
@@ -360,7 +365,6 @@ namespace KiteDoc
             float? fontSize = null, List<HorizontalAlign> align = null, bool isSerialNumber = false)
         {
             var table = GetTableObject(true, 100);
-
 
             if ((tableHead != null) && tableHead.Count != 0)
             {
@@ -450,7 +454,6 @@ namespace KiteDoc
                                 }
                             }
 
-
                             //将单元格写入行
                             tableRow.AppendChild(tableCell);
                         }
@@ -462,7 +465,6 @@ namespace KiteDoc
             }
             return table;
         }
-
 
         /// <summary>
         /// 获得一个包含垂直合并的表格
@@ -593,7 +595,6 @@ namespace KiteDoc
                         }
                     }
 
-
                     //将单元格写入行
                     tableRowList[j].AppendChild(tableCell);
                 }
@@ -606,7 +607,6 @@ namespace KiteDoc
 
             return table;
         }
-
 
         /// <summary>
         /// 生成表格，通过指定合并起止位置来进行合并
@@ -680,7 +680,6 @@ namespace KiteDoc
             // 如果传递的对齐参数与表格列数相同，则用对齐参数列表分别设置每一列对齐方式
             if (align != null && align.Count == data[0].Length)
             {
-
                 for (int i = 0; i < data.Count; i++)
                 {
                     TableRow tableRow = new TableRow();
@@ -691,7 +690,6 @@ namespace KiteDoc
                         TableCell tableCell = null;
                     }
                 }
-
 
                 foreach (string[] rowList in data)
                 {
@@ -763,28 +761,32 @@ namespace KiteDoc
                 throw new Exception($"未在该路径({fileName})找到图片");
             }
             MainDocumentPart mainPart = doc.MainDocumentPart;
-            ImagePartType imagePartType = ImagePartType.Png;
+
+            var imagePartType = ImagePartType.Png;
             switch (imageType)
             {
                 case ImageType.Png:
                     imagePartType = ImagePartType.Png;
                     break;
+
                 case ImageType.Jpeg:
                     imagePartType = ImagePartType.Jpeg;
                     break;
+
                 case ImageType.Bmp:
                     imagePartType = ImagePartType.Bmp;
                     break;
+
                 case ImageType.Gif:
                     imagePartType = ImagePartType.Gif;
                     break;
+
                 case ImageType.Icon:
                     imagePartType = ImagePartType.Icon;
                     break;
             }
 
             ImagePart imagePart = mainPart.AddImagePart(imagePartType);
-
 
             double rate = default;
             // 将图片写入Word
@@ -799,7 +801,6 @@ namespace KiteDoc
                 var imageInfo = Image.Identify(stream);
                 rate = (double)imageInfo.Width / (double)imageInfo.Height;
             }
-
 
             string relationshipId = mainPart.GetIdOfPart(imagePart);
 
@@ -880,6 +881,5 @@ namespace KiteDoc
 
             return new Run(element);
         }
-
     }
 }

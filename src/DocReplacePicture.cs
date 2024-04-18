@@ -7,7 +7,6 @@ using System.IO;
 using System.Linq;
 using SixLabors.ImageSharp;
 
-
 using A = DocumentFormat.OpenXml.Drawing;
 using DW = DocumentFormat.OpenXml.Drawing.Wordprocessing;
 using PIC = DocumentFormat.OpenXml.Drawing.Pictures;
@@ -20,41 +19,45 @@ namespace KiteDoc
     /// </summary>
     public static class DocReplacePictureExtension
     {
-        public static int Replace(this WordprocessingDocument doc,string oldString, string fileName, ImageType imageType, int width = 18, int height = -1)
+        public static int Replace(this WordprocessingDocument doc, string oldString, string fileName, ImageType imageType, int width = 18, int height = -1)
         {
             var count = 0;
 
             var elements = doc.FindAllTextElement();
             var waitReplace = DocElementUtils.FindRun(elements, oldString);
 
-            if (waitReplace.Any()) {
+            if (waitReplace.Any())
+            {
                 if (!File.Exists(fileName))
                 {
                     throw new Exception($"未在该路径({fileName})找到图片");
                 }
                 MainDocumentPart mainPart = doc.MainDocumentPart;
-                ImagePartType imagePartType = ImagePartType.Png;
+                var imagePartType = ImagePartType.Png;
                 switch (imageType)
                 {
                     case ImageType.Png:
                         imagePartType = ImagePartType.Png;
                         break;
+
                     case ImageType.Jpeg:
                         imagePartType = ImagePartType.Jpeg;
                         break;
+
                     case ImageType.Bmp:
                         imagePartType = ImagePartType.Bmp;
                         break;
+
                     case ImageType.Gif:
                         imagePartType = ImagePartType.Gif;
                         break;
+
                     case ImageType.Icon:
                         imagePartType = ImagePartType.Icon;
                         break;
                 }
 
                 ImagePart imagePart = mainPart.AddImagePart(imagePartType);
-
 
                 double rate = default;
                 // 将图片写入Word
@@ -69,7 +72,6 @@ namespace KiteDoc
                     var imageInfo = Image.Identify(stream);
                     rate = (double)imageInfo.Width / (double)imageInfo.Height;
                 }
-
 
                 string relationshipId = mainPart.GetIdOfPart(imagePart);
 
@@ -150,11 +152,10 @@ namespace KiteDoc
 
                 var run = new Run(element);
 
-
                 foreach (var item in waitReplace)
                 {
                     // 获取图片，插入到对应的位置
-                    item.First().InsertAfterSelf( (Run)run.Clone() );
+                    item.First().InsertAfterSelf((Run)run.Clone());
 
                     foreach (var waitDelete in item)
                     {
@@ -163,10 +164,7 @@ namespace KiteDoc
 
                     count++;
                 }
-
             }
-
-
 
             return count;
         }
