@@ -4,7 +4,7 @@
 	  <TargetFrameworks>net6.0;net8.0</TargetFrameworks>
     <SignAssembly>false</SignAssembly>
 	  <Nullable>enable</Nullable>
-    <Version>0.3.3</Version>
+    <Version>0.3.4</Version>
     <Company>吴俊城</Company>
     <Product>吴俊城</Product>
     <Description>一组使用OpenXML操作Word文档的快捷API</Description>
@@ -14,7 +14,7 @@
     <RepositoryUrl>https://github.com/wujunchengman/KiteDoc</RepositoryUrl>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
-    <PackageReleaseNotes>修复拼接分开的RUN文本时的一个判断错误</PackageReleaseNotes>
+    <PackageReleaseNotes>替换图片时指定宽高支持小数</PackageReleaseNotes>
 	  <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 

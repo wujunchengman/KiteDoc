@@ -19,7 +19,7 @@ namespace KiteDoc
     /// </summary>
     public static class DocReplacePictureExtension
     {
-        public static int Replace(this WordprocessingDocument doc, string oldString, string fileName, ImageType imageType, int width = 18, int height = -1)
+        public static int Replace(this WordprocessingDocument doc, string oldString, string fileName, ImageType imageType, double width = 18, double height = -1)
         {
             var count = 0;
 
@@ -65,6 +65,7 @@ namespace KiteDoc
                 {
                     imagePart.FeedData(stream);
                 }
+
                 // 再次读取计算宽高比
                 // 这里因为流写过一次就变成空了，需要深入了解后再优化
                 using (FileStream stream = new FileStream(fileName, FileMode.Open))
@@ -75,15 +76,15 @@ namespace KiteDoc
 
                 string relationshipId = mainPart.GetIdOfPart(imagePart);
 
-                long cx = 360000L * width; //360000L = 1厘米
-                long cy = default;
+                long cx = (long)(360000L * width); //360000L = 1厘米
+                long cy;
                 if (height == -1)
                 {
                     cy = (long)(360000L * width / rate);
                 }
                 else
                 {
-                    cy = 360000L * height;
+                    cy = (long)(360000L * height);
                 }
 
                 // Define the reference of the image.
