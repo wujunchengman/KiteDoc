@@ -4,7 +4,7 @@
 	  <TargetFrameworks>net6.0;net8.0</TargetFrameworks>
     <SignAssembly>false</SignAssembly>
 	  <Nullable>enable</Nullable>
-    <Version>0.3.4</Version>
+    <Version>0.4.1</Version>
     <Company>吴俊城</Company>
     <Product>吴俊城</Product>
     <Description>一组使用OpenXML操作Word文档的快捷API</Description>
@@ -14,7 +14,7 @@
     <RepositoryUrl>https://github.com/wujunchengman/KiteDoc</RepositoryUrl>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
-    <PackageReleaseNotes>替换图片时指定宽高支持小数</PackageReleaseNotes>
+    <PackageReleaseNotes>增加获取图片Run扩展方法，以支持替换为多张图片</PackageReleaseNotes>
 	  <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
